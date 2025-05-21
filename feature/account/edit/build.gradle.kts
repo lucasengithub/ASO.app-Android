@@ -8,9 +8,8 @@ android {
 }
 
 dependencies {
-    implementation(projects.core.common)
     implementation(projects.core.ui.compose.designsystem)
-    implementation(projects.core.ui.compose.navigation)
+    implementation(projects.core.common)
 
     implementation(projects.mail.common)
 

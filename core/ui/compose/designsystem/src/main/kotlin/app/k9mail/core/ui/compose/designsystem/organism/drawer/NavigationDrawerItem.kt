@@ -5,7 +5,6 @@ import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.style.TextOverflow
 import app.k9mail.core.ui.compose.designsystem.atom.text.TextLabelLarge
 import androidx.compose.material3.NavigationDrawerItem as Material3NavigationDrawerItem
 
@@ -19,13 +18,7 @@ fun NavigationDrawerItem(
     badge: (@Composable () -> Unit)? = null,
 ) {
     Material3NavigationDrawerItem(
-        label = {
-            TextLabelLarge(
-                text = label,
-                overflow = TextOverflow.Ellipsis,
-                maxLines = 2,
-            )
-        },
+        label = { TextLabelLarge(text = label, maxLines = 2) },
         selected = selected,
         onClick = onClick,
         modifier = Modifier
@@ -46,13 +39,7 @@ fun NavigationDrawerItem(
     badge: (@Composable () -> Unit)? = null,
 ) {
     Material3NavigationDrawerItem(
-        label = {
-            TextLabelLarge(
-                text = label,
-                overflow = TextOverflow.Ellipsis,
-                maxLines = 2,
-            )
-        },
+        label = { TextLabelLarge(text = label, maxLines = 2) },
         selected = selected,
         onClick = onClick,
         modifier = Modifier

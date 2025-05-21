@@ -1,9 +1,9 @@
 package com.fsck.k9.notification
 
+import app.k9mail.legacy.account.Account
 import app.k9mail.legacy.mailstore.MessageStoreManager
 import app.k9mail.legacy.message.controller.MessageReference
 import com.fsck.k9.mailstore.LocalStoreProvider
-import net.thunderbird.core.android.account.LegacyAccount
 
 internal class NotificationRepository(
     private val notificationStoreProvider: NotificationStoreProvider,
@@ -14,7 +14,7 @@ internal class NotificationRepository(
     private val notificationDataStore = NotificationDataStore()
 
     @Synchronized
-    fun restoreNotifications(account: LegacyAccount): NotificationData? {
+    fun restoreNotifications(account: Account): NotificationData? {
         if (notificationDataStore.isAccountInitialized(account)) return null
 
         val localStore = localStoreProvider.getInstance(account)
@@ -43,7 +43,7 @@ internal class NotificationRepository(
     }
 
     @Synchronized
-    fun addNotification(account: LegacyAccount, content: NotificationContent, timestamp: Long): AddNotificationResult? {
+    fun addNotification(account: Account, content: NotificationContent, timestamp: Long): AddNotificationResult? {
         restoreNotifications(account)
 
         return notificationDataStore.addNotification(account, content, timestamp)?.also { result ->
@@ -57,7 +57,7 @@ internal class NotificationRepository(
 
     @Synchronized
     fun removeNotifications(
-        account: LegacyAccount,
+        account: Account,
         clearNewMessageState: Boolean = true,
         selector: (List<MessageReference>) -> List<MessageReference>,
     ): RemoveNotificationsResult? {
@@ -73,7 +73,7 @@ internal class NotificationRepository(
     }
 
     @Synchronized
-    fun clearNotifications(account: LegacyAccount, clearNewMessageState: Boolean) {
+    fun clearNotifications(account: Account, clearNewMessageState: Boolean) {
         notificationDataStore.clearNotifications(account)
         clearNotificationStore(account)
 
@@ -83,7 +83,7 @@ internal class NotificationRepository(
     }
 
     private fun persistNotificationDataStoreChanges(
-        account: LegacyAccount,
+        account: Account,
         operations: List<NotificationStoreOperation>,
         updateNewMessageState: Boolean,
     ) {
@@ -95,7 +95,7 @@ internal class NotificationRepository(
         }
     }
 
-    private fun setNewMessageState(account: LegacyAccount, operations: List<NotificationStoreOperation>) {
+    private fun setNewMessageState(account: Account, operations: List<NotificationStoreOperation>) {
         val messageStore = messageStoreManager.getMessageStore(account)
 
         for (operation in operations) {
@@ -121,12 +121,12 @@ internal class NotificationRepository(
         }
     }
 
-    private fun clearNewMessageState(account: LegacyAccount) {
+    private fun clearNewMessageState(account: Account) {
         val messageStore = messageStoreManager.getMessageStore(account)
         messageStore.clearNewMessageState()
     }
 
-    private fun clearNotificationStore(account: LegacyAccount) {
+    private fun clearNotificationStore(account: Account) {
         val notificationStore = notificationStoreProvider.getNotificationStore(account)
         notificationStore.clearNotifications()
     }

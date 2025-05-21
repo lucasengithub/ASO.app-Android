@@ -11,7 +11,6 @@ dependencies {
     api(projects.feature.funding.api)
 
     implementation(projects.core.common)
-    implementation(projects.core.outcome)
     implementation(projects.core.ui.compose.designsystem)
 
     implementation(libs.android.billing)

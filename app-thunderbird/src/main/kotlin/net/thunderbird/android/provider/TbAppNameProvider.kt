@@ -6,7 +6,7 @@ import app.k9mail.core.common.provider.BrandNameProvider
 import com.fsck.k9.preferences.FilePrefixProvider
 import net.thunderbird.android.R
 
-internal class TbAppNameProvider(
+class TbAppNameProvider(
     context: Context,
 ) : AppNameProvider, BrandNameProvider, FilePrefixProvider {
     override val appName: String by lazy {

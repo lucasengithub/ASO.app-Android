@@ -12,6 +12,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import app.k9mail.legacy.account.Account
 import app.k9mail.legacy.ui.folder.DisplayFolder
 import app.k9mail.legacy.ui.folder.FolderIconProvider
 import app.k9mail.legacy.ui.folder.FolderNameFormatter
@@ -22,7 +23,6 @@ import com.fsck.k9.ui.base.livedata.observeNotNull
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import java.util.Locale
-import net.thunderbird.core.android.account.LegacyAccount
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -34,7 +34,7 @@ class ManageFoldersFragment : Fragment() {
     private val preferences: Preferences by inject()
     private val folderIconProvider: FolderIconProvider by inject { parametersOf(requireActivity().theme) }
 
-    private lateinit var account: LegacyAccount
+    private lateinit var account: Account
     private lateinit var itemAdapter: ItemAdapter<FolderListItem>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -99,11 +99,6 @@ class ManageFoldersFragment : Fragment() {
         configureFolderSearchView(menu)
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        val folderMenuItem = menu.findItem(R.id.filter_folders)
-        folderMenuItem.isVisible = !folderMenuItem.isActionViewExpanded
-    }
-
     private fun configureFolderSearchView(menu: Menu) {
         val folderMenuItem = menu.findItem(R.id.filter_folders)
         val folderSearchView = folderMenuItem.actionView as SearchView
@@ -121,16 +116,6 @@ class ManageFoldersFragment : Fragment() {
                 }
             },
         )
-        folderMenuItem?.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
-            override fun onMenuItemActionExpand(p0: MenuItem): Boolean {
-                return true
-            }
-
-            override fun onMenuItemActionCollapse(p0: MenuItem): Boolean {
-                requireActivity().invalidateOptionsMenu()
-                return true
-            }
-        })
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

@@ -3,9 +3,6 @@ package app.k9mail.core.ui.compose.designsystem.atom.textfield
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.autofill.ContentType
-import androidx.compose.ui.semantics.contentType
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.material3.OutlinedTextField as Material3OutlinedTextField
 
@@ -24,13 +21,13 @@ fun TextFieldOutlinedEmailAddress(
     Material3OutlinedTextField(
         value = value,
         onValueChange = stripLineBreaks(onValueChange),
-        modifier = modifier.semantics { contentType = ContentType.EmailAddress },
+        modifier = modifier,
         enabled = isEnabled,
         label = selectLabel(label, isRequired),
         readOnly = isReadOnly,
         isError = hasError,
         keyboardOptions = KeyboardOptions(
-            autoCorrectEnabled = false,
+            autoCorrect = false,
             keyboardType = KeyboardType.Email,
         ),
         singleLine = true,

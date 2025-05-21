@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import android.annotation.SuppressLint;
@@ -168,33 +167,21 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         holder.showCryptoState(isAvailable, showCryptoEnabled);
     }
 
-    private List<Recipient> parseRecipients(String text) {
+    @Override
+    protected Recipient defaultObject(String completionText) {
         try {
-            List<Address> parsedAddresses = emailAddressParser.parse(text);
+            List<Address> parsedAddresses = emailAddressParser.parse(completionText);
 
             if (parsedAddresses.isEmpty()) {
                 setError(getContext().getString(R.string.recipient_error_parse_failed));
-                return List.of();
+                return null;
             }
 
-            List<Recipient> recipients = new ArrayList<>();
-            for (Address a : parsedAddresses) {
-                recipients.add(new Recipient(a));
-            }
-            return recipients;
+            return new Recipient(parsedAddresses.get(0));
         } catch (NonAsciiEmailAddressException e) {
             setError(getContext().getString(R.string.recipient_error_non_ascii));
-            return List.of();
+            return null;
         }
-    }
-
-    @Override
-    protected Recipient defaultObject(String completionText) {
-        List<Recipient> recipients = parseRecipients(completionText);
-        if (!recipients.isEmpty()) {
-            return recipients.get(0);
-        }
-        return null;
     }
 
     public void setLoaderManager(@Nullable LoaderManager loaderManager) {
@@ -258,12 +245,9 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     @Override
     public void performCompletion() {
         if (getListSelection() == ListView.INVALID_POSITION && enoughToFilter()) {
-            List<Recipient> recipients = parseRecipients(currentCompletionText());
-            if (!recipients.isEmpty()) {
-                clearCompletionText();
-                for (Recipient r : recipients) {
-                    addObjectSync(r);
-                }
+            Object recipientText = defaultObject(currentCompletionText());
+            if (recipientText != null) {
+                replaceText(convertSelectionToString(recipientText));
             }
         } else {
             super.performCompletion();

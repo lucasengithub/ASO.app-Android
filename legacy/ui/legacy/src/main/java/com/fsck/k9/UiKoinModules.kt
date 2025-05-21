@@ -23,7 +23,7 @@ import com.fsck.k9.ui.settings.settingsUiModule
 import com.fsck.k9.ui.uiModule
 import com.fsck.k9.view.viewModule
 
-val legacyUiModules = listOf(
+val uiModules = listOf(
     featureAccountOAuthModule,
     uiBaseModule,
     activityModule,

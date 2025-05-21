@@ -7,13 +7,12 @@ android {
 }
 
 dependencies {
-    implementation(projects.feature.search)
-    implementation(projects.core.account)
-    implementation(projects.core.android.account)
+    implementation(projects.legacy.account)
     implementation(projects.legacy.di)
+    implementation(projects.legacy.folder)
     implementation(projects.legacy.message)
+    implementation(projects.legacy.search)
 
     implementation(projects.mail.common)
     implementation(projects.core.mail.folder.api)
-    implementation(projects.feature.folder.api)
 }

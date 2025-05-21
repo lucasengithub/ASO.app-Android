@@ -1,8 +1,14 @@
 package com.fsck.k9.controller.push
 
+import app.k9mail.legacy.account.Account
+import app.k9mail.legacy.account.AccountManager
 import app.k9mail.legacy.mailstore.FolderRepository
+import app.k9mail.legacy.preferences.BackgroundSync
+import app.k9mail.legacy.preferences.GeneralSettingsManager
 import com.fsck.k9.backend.BackendManager
 import com.fsck.k9.helper.mapToSet
+import com.fsck.k9.network.ConnectivityChangeListener
+import com.fsck.k9.network.ConnectivityManager
 import com.fsck.k9.notification.PushNotificationManager
 import com.fsck.k9.notification.PushNotificationState
 import com.fsck.k9.notification.PushNotificationState.ALARM_PERMISSION_MISSING
@@ -20,12 +26,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import net.thunderbird.core.android.account.AccountManager
-import net.thunderbird.core.android.account.LegacyAccount
-import net.thunderbird.core.android.network.ConnectivityChangeListener
-import net.thunderbird.core.android.network.ConnectivityManager
-import net.thunderbird.core.preferences.BackgroundSync
-import net.thunderbird.core.preferences.GeneralSettingsManager
 import timber.log.Timber
 
 /**
@@ -137,7 +137,7 @@ class PushController internal constructor(
         launchUpdatePushers()
     }
 
-    private fun onBackendChanged(account: LegacyAccount) {
+    private fun onBackendChanged(account: Account) {
         coroutineScope.launch(coroutineDispatcher) {
             val accountPushController = synchronized(lock) {
                 pushers.remove(account.uuid)
@@ -239,14 +239,14 @@ class PushController internal constructor(
         }
     }
 
-    private fun getPushCapableAccounts(): Set<LegacyAccount> {
+    private fun getPushCapableAccounts(): Set<Account> {
         return accountManager.getAccounts()
             .asSequence()
             .filter { account -> backendManager.getBackend(account).isPushCapable }
             .toSet()
     }
 
-    private fun getPushAccounts(): Set<LegacyAccount> {
+    private fun getPushAccounts(): Set<Account> {
         return getPushCapableAccounts()
             .asSequence()
             .filter { account -> folderRepository.hasPushEnabledFolder(account) }
@@ -297,7 +297,7 @@ class PushController internal constructor(
         }
     }
 
-    private fun updatePushEnabledListeners(accounts: Set<LegacyAccount>) {
+    private fun updatePushEnabledListeners(accounts: Set<Account>) {
         synchronized(lock) {
             // Stop listening to push enabled changes in accounts we no longer monitor
             val accountUuids = accounts.mapToSet { it.uuid }

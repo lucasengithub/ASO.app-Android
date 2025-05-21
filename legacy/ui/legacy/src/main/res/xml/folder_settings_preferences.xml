@@ -20,9 +20,10 @@
 
     <PreferenceCategory android:key="folder_settings">
 
-        <SwitchPreference
+        <CheckBoxPreference
             android:key="folder_settings_in_top_group"
             android:title="@string/folder_settings_in_top_group_label"
+            android:summary="@string/folder_settings_in_top_group_summary"
             />
 
         <SwitchPreference
@@ -45,9 +46,10 @@
             android:title="@string/folder_settings_notifications_label"
             />
 
-        <SwitchPreference
+        <CheckBoxPreference
             android:key="folder_settings_include_in_integrated_inbox"
             android:title="@string/folder_settings_include_in_integrated_inbox_label"
+            android:summary="@string/folder_settings_include_in_integrated_inbox_summary"
             />
 
     </PreferenceCategory>

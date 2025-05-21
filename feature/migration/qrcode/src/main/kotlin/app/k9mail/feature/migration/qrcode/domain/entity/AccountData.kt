@@ -3,7 +3,8 @@ package app.k9mail.feature.migration.qrcode.domain.entity
 import app.k9mail.core.common.mail.EmailAddress
 import app.k9mail.core.common.net.Hostname
 import app.k9mail.core.common.net.Port
-import net.thunderbird.core.android.account.DeletePolicy
+import app.k9mail.legacy.account.Account
+import app.k9mail.legacy.account.Account.DeletePolicy
 
 internal data class AccountData(
     val sequenceNumber: Int,

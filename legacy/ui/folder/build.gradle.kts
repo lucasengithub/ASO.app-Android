@@ -11,11 +11,11 @@ dependencies {
 
     implementation(projects.core.mail.folder.api)
 
-    implementation(projects.core.account)
-    implementation(projects.core.android.account)
+    implementation(projects.legacy.account)
+    implementation(projects.legacy.folder)
     implementation(projects.legacy.mailstore)
     implementation(projects.legacy.message)
-    implementation(projects.feature.folder.api)
+    implementation(projects.legacy.search)
 
     implementation(libs.androidx.lifecycle.livedata.ktx)
 }

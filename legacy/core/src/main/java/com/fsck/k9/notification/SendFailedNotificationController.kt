@@ -3,15 +3,15 @@ package com.fsck.k9.notification
 import android.app.Notification
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import app.k9mail.legacy.account.Account
 import com.fsck.k9.helper.ExceptionHelper
-import net.thunderbird.core.android.account.LegacyAccount
 
 internal class SendFailedNotificationController(
     private val notificationHelper: NotificationHelper,
     private val actionBuilder: NotificationActionCreator,
     private val resourceProvider: NotificationResourceProvider,
 ) {
-    fun showSendFailedNotification(account: LegacyAccount, exception: Exception) {
+    fun showSendFailedNotification(account: Account, exception: Exception) {
         val title = resourceProvider.sendFailedTitle()
         val text = ExceptionHelper.getRootCauseMessage(exception)
 
@@ -43,12 +43,12 @@ internal class SendFailedNotificationController(
         notificationManager.notify(notificationId, notificationBuilder.build())
     }
 
-    fun clearSendFailedNotification(account: LegacyAccount) {
+    fun clearSendFailedNotification(account: Account) {
         val notificationId = NotificationIds.getSendFailedNotificationId(account)
         notificationManager.cancel(notificationId)
     }
 
-    private fun createLockScreenNotification(account: LegacyAccount): Notification {
+    private fun createLockScreenNotification(account: Account): Notification {
         return notificationHelper
             .createNotificationBuilder(account, NotificationChannelManager.ChannelType.MISCELLANEOUS)
             .setSmallIcon(resourceProvider.iconWarning)

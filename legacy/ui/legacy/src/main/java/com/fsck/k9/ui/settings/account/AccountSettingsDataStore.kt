@@ -1,26 +1,21 @@
 package com.fsck.k9.ui.settings.account
 
 import androidx.preference.PreferenceDataStore
+import app.k9mail.legacy.account.Account
+import app.k9mail.legacy.account.Account.SpecialFolderSelection
+import app.k9mail.legacy.notification.NotificationLight
+import app.k9mail.legacy.notification.NotificationVibration
 import com.fsck.k9.Preferences
 import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.job.K9JobManager
 import com.fsck.k9.notification.NotificationChannelManager
 import com.fsck.k9.notification.NotificationController
 import java.util.concurrent.ExecutorService
-import net.thunderbird.core.android.account.DeletePolicy
-import net.thunderbird.core.android.account.Expunge
-import net.thunderbird.core.android.account.LegacyAccount
-import net.thunderbird.core.android.account.MessageFormat
-import net.thunderbird.core.android.account.QuoteStyle
-import net.thunderbird.core.android.account.ShowPictures
-import net.thunderbird.core.mail.folder.api.SpecialFolderSelection
-import net.thunderbird.feature.notification.NotificationLight
-import net.thunderbird.feature.notification.NotificationVibration
 
 class AccountSettingsDataStore(
     private val preferences: Preferences,
     private val executorService: ExecutorService,
-    private val account: LegacyAccount,
+    private val account: Account,
     private val jobManager: K9JobManager,
     private val notificationChannelManager: NotificationChannelManager,
     private val notificationController: NotificationController,
@@ -148,7 +143,7 @@ class AccountSettingsDataStore(
 
         when (key) {
             "account_description" -> account.name = value
-            "show_pictures_enum" -> account.showPictures = ShowPictures.valueOf(value)
+            "show_pictures_enum" -> account.showPictures = Account.ShowPictures.valueOf(value)
             "account_display_count" -> account.displayCount = value.toInt()
             "account_message_age" -> account.maximumPolledMessageAge = value.toInt()
             "account_autodownload_size" -> account.maximumAutoDownloadMessageSize = value.toInt()
@@ -157,12 +152,12 @@ class AccountSettingsDataStore(
                     reschedulePoll()
                 }
             }
-            "delete_policy" -> account.deletePolicy = DeletePolicy.valueOf(value)
-            "expunge_policy" -> account.expungePolicy = Expunge.valueOf(value)
+            "delete_policy" -> account.deletePolicy = Account.DeletePolicy.valueOf(value)
+            "expunge_policy" -> account.expungePolicy = Account.Expunge.valueOf(value)
             "max_push_folders" -> account.maxPushFolders = value.toInt()
             "idle_refresh_period" -> account.idleRefreshMinutes = value.toInt()
-            "message_format" -> account.messageFormat = MessageFormat.valueOf(value)
-            "quote_style" -> account.quoteStyle = QuoteStyle.valueOf(value)
+            "message_format" -> account.messageFormat = Account.MessageFormat.valueOf(value)
+            "quote_style" -> account.quoteStyle = Account.QuoteStyle.valueOf(value)
             "account_quote_prefix" -> account.quotePrefix = value
             "account_setup_auto_expand_folder" -> account.autoExpandFolderId = extractFolderId(value)
             "archive_folder" -> saveSpecialFolderSelection(value, account::setArchiveFolderId)

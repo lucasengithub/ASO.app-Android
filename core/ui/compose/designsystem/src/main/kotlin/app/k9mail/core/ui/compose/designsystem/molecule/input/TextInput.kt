@@ -5,9 +5,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.autofill.ContentType
-import androidx.compose.ui.semantics.contentType
-import androidx.compose.ui.semantics.semantics
 import app.k9mail.core.ui.compose.designsystem.atom.textfield.TextFieldOutlined
 
 @Suppress("LongParameterList")
@@ -23,19 +20,12 @@ fun TextInput(
     isSingleLine: Boolean = true,
     isEnabled: Boolean = true,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    contentType: ContentType? = null,
 ) {
     InputLayout(
         modifier = modifier,
         contentPadding = contentPadding,
         errorMessage = errorMessage,
     ) {
-        val textFieldModifier = if (contentType != null) {
-            Modifier.semantics { this.contentType = contentType }
-        } else {
-            Modifier
-        }
-
         TextFieldOutlined(
             value = text,
             onValueChange = onTextChange,
@@ -44,7 +34,7 @@ fun TextInput(
             isRequired = isRequired,
             hasError = errorMessage != null,
             isSingleLine = isSingleLine,
-            modifier = textFieldModifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             keyboardOptions = keyboardOptions,
         )
     }

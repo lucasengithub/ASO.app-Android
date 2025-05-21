@@ -1,13 +1,14 @@
 package com.fsck.k9.controller
 
 import app.k9mail.core.featureflag.FeatureFlagProvider
+import app.k9mail.core.featureflag.FeatureFlagResult
 import app.k9mail.core.featureflag.toFeatureFlagKey
+import app.k9mail.legacy.account.Account
 import app.k9mail.legacy.message.controller.MessageReference
 import com.fsck.k9.controller.MessagingController.MessageActor
 import com.fsck.k9.controller.MessagingController.MoveOrCopyFlavor
 import com.fsck.k9.mailstore.LocalFolder
 import com.fsck.k9.mailstore.LocalMessage
-import net.thunderbird.core.android.account.LegacyAccount
 import timber.log.Timber
 
 internal class ArchiveOperations(
@@ -33,12 +34,7 @@ internal class ArchiveOperations(
     private fun archiveByFolder(
         description: String,
         messages: List<MessageReference>,
-        action: (
-            account: LegacyAccount,
-            folderId: Long,
-            messagesInFolder: List<LocalMessage>,
-            archiveFolderId: Long,
-        ) -> Unit,
+        action: (account: Account, folderId: Long, messagesInFolder: List<LocalMessage>, archiveFolderId: Long) -> Unit,
     ) {
         actOnMessagesGroupedByAccountAndFolder(messages) { account, messageFolder, messagesInFolder ->
             val sourceFolderId = messageFolder.databaseId
@@ -62,7 +58,7 @@ internal class ArchiveOperations(
     }
 
     private fun archiveThreads(
-        account: LegacyAccount,
+        account: Account,
         sourceFolderId: Long,
         messages: List<LocalMessage>,
         archiveFolderId: Long,
@@ -72,16 +68,16 @@ internal class ArchiveOperations(
     }
 
     private fun archiveMessages(
-        account: LegacyAccount,
+        account: Account,
         sourceFolderId: Long,
         messages: List<LocalMessage>,
         archiveFolderId: Long,
     ) {
-        val operation = featureFlagProvider.provide("archive_marks_as_read".toFeatureFlagKey())
-            .whenEnabledOrNot(
-                onEnabled = { MoveOrCopyFlavor.MOVE_AND_MARK_AS_READ },
-                onDisabledOrUnavailable = { MoveOrCopyFlavor.MOVE },
-            )
+        val operation = when (featureFlagProvider.provide("archive_marks_as_read".toFeatureFlagKey())) {
+            FeatureFlagResult.Enabled -> MoveOrCopyFlavor.MOVE_AND_MARK_AS_READ
+            FeatureFlagResult.Disabled -> MoveOrCopyFlavor.MOVE
+            FeatureFlagResult.Unavailable -> MoveOrCopyFlavor.MOVE
+        }
         messagingController.moveOrCopyMessageSynchronous(
             account,
             sourceFolderId,
@@ -93,7 +89,7 @@ internal class ArchiveOperations(
 
     private fun actOnMessagesGroupedByAccountAndFolder(
         messages: List<MessageReference>,
-        block: (account: LegacyAccount, messageFolder: LocalFolder, messages: List<LocalMessage>) -> Unit,
+        block: (account: Account, messageFolder: LocalFolder, messages: List<LocalMessage>) -> Unit,
     ) {
         val actor = MessageActor { account, messageFolder, messagesInFolder ->
             block(account, messageFolder, messagesInFolder)

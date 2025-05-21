@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    configureSharedConfig(project)
+    configureSharedConfig()
 
     buildFeatures {
         buildConfig = false
@@ -14,6 +14,10 @@ android {
 
     kotlinOptions {
         jvmTarget = ThunderbirdProjectConfig.javaCompatibilityVersion.toString()
+    }
+
+    lint {
+        lintConfig = file("${rootProject.projectDir}/config/lint/lint.xml")
     }
 
     testOptions {

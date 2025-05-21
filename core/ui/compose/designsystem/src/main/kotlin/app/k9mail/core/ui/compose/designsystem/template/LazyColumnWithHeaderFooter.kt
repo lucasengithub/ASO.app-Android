@@ -3,8 +3,6 @@ package app.k9mail.core.ui.compose.designsystem.template
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -24,7 +22,6 @@ import androidx.compose.ui.unit.Density
 @Composable
 fun LazyColumnWithHeaderFooter(
     modifier: Modifier = Modifier,
-    state: LazyListState = rememberLazyListState(),
     verticalArrangement: Arrangement.Vertical = Arrangement.Top,
     horizontalAlignment: Alignment.Horizontal = Alignment.Start,
     header: @Composable () -> Unit = {},
@@ -33,7 +30,6 @@ fun LazyColumnWithHeaderFooter(
 ) {
     LazyColumn(
         modifier = modifier,
-        state = state,
         verticalArrangement = verticalArrangementWithHeaderFooter(verticalArrangement),
         horizontalAlignment = horizontalAlignment,
     ) {

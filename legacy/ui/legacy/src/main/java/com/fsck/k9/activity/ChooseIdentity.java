@@ -4,13 +4,14 @@ package com.fsck.k9.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
-import net.thunderbird.core.android.account.Identity;
-import net.thunderbird.core.android.account.LegacyAccount;
+import app.k9mail.legacy.account.Account;
 import app.k9mail.legacy.di.DI;
+import app.k9mail.legacy.account.Identity;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.ui.R;
 import com.fsck.k9.ui.identity.IdentityFormatter;
@@ -20,7 +21,7 @@ import java.util.List;
 public class ChooseIdentity extends K9ListActivity {
     private final IdentityFormatter identityFormatter = DI.get(IdentityFormatter.class);
 
-    LegacyAccount mAccount;
+    Account mAccount;
     ArrayAdapter<String> adapter;
 
     public static final String EXTRA_ACCOUNT = "com.fsck.k9.ChooseIdentity_account";
@@ -32,6 +33,7 @@ public class ChooseIdentity extends K9ListActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setLayout(R.layout.list_content_simple);
         setTitle(R.string.choose_identity_title);
 

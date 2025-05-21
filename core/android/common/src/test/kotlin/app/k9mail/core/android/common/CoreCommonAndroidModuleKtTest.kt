@@ -1,17 +1,26 @@
 package app.k9mail.core.android.common
 
-import android.content.Context
+import app.k9mail.core.android.common.test.externalModule
 import org.junit.Test
-import org.koin.test.verify.verify
+import org.junit.runner.RunWith
+import org.koin.android.ext.koin.androidContext
+import org.koin.dsl.koinApplication
+import org.koin.test.check.checkModules
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.RuntimeEnvironment
 
+@RunWith(RobolectricTestRunner::class)
 internal class CoreCommonAndroidModuleKtTest {
 
     @Test
     fun `should have a valid di module`() {
-        coreCommonAndroidModule.verify(
-            extraTypes = listOf(
-                Context::class,
-            ),
-        )
+        koinApplication {
+            modules(
+                externalModule,
+                coreCommonAndroidModule,
+            )
+            androidContext(RuntimeEnvironment.getApplication())
+            checkModules()
+        }
     }
 }

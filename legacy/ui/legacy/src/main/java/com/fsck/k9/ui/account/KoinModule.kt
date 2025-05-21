@@ -1,6 +1,6 @@
 package com.fsck.k9.ui.account
 
-import net.thunderbird.core.ui.account.AccountFallbackImageProvider
+import app.k9mail.legacy.ui.account.AccountFallbackImageProvider
 import org.koin.dsl.module
 
 val accountUiModule = module {

@@ -1,11 +1,11 @@
 package app.k9mail.legacy.mailstore
 
 import app.k9mail.core.mail.folder.api.FolderType
-import net.thunderbird.core.android.account.LegacyAccount
+import app.k9mail.legacy.account.Account
 
 object FolderTypeMapper {
 
-    fun folderTypeOf(account: LegacyAccount, folderId: Long) = when (folderId) {
+    fun folderTypeOf(account: Account, folderId: Long) = when (folderId) {
         account.inboxFolderId -> FolderType.INBOX
         account.outboxFolderId -> FolderType.OUTBOX
         account.sentFolderId -> FolderType.SENT

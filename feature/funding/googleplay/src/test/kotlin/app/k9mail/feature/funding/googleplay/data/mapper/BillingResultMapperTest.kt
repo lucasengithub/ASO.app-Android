@@ -1,6 +1,7 @@
 package app.k9mail.feature.funding.googleplay.data.mapper
 
 import app.k9mail.feature.funding.googleplay.domain.DomainContract.BillingError
+import app.k9mail.feature.funding.googleplay.domain.Outcome
 import assertk.all
 import assertk.assertThat
 import assertk.assertions.isEqualTo
@@ -11,7 +12,6 @@ import com.android.billingclient.api.BillingResult
 import kotlin.reflect.KClass
 import kotlin.test.Test
 import kotlinx.coroutines.test.runTest
-import net.thunderbird.core.outcome.Outcome
 
 class BillingResultMapperTest {
 

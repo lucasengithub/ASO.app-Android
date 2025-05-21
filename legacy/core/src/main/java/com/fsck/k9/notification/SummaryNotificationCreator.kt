@@ -3,8 +3,8 @@ package com.fsck.k9.notification
 import android.app.PendingIntent
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.WearableExtender
+import app.k9mail.legacy.account.Account
 import com.fsck.k9.notification.NotificationChannelManager.ChannelType
-import net.thunderbird.core.android.account.LegacyAccount
 import timber.log.Timber
 import androidx.core.app.NotificationCompat.Builder as NotificationBuilder
 
@@ -23,7 +23,6 @@ internal class SummaryNotificationCreator(
             is SummarySingleNotificationData -> {
                 createSingleMessageNotification(baseNotificationData, summaryNotificationData.singleNotificationData)
             }
-
             is SummaryInboxNotificationData -> {
                 createInboxStyleSummaryNotification(baseNotificationData, summaryNotificationData)
             }
@@ -100,15 +99,12 @@ internal class SummaryNotificationCreator(
         setStyle(style)
     }
 
-    private fun createViewIntent(
-        account: LegacyAccount,
-        notificationData: SummaryInboxNotificationData,
-    ): PendingIntent {
+    private fun createViewIntent(account: Account, notificationData: SummaryInboxNotificationData): PendingIntent {
         return actionCreator.createViewMessagesPendingIntent(account, notificationData.messageReferences)
     }
 
     private fun NotificationBuilder.setDeviceActions(
-        account: LegacyAccount,
+        account: Account,
         notificationData: SummaryInboxNotificationData,
     ) = apply {
         for (action in notificationData.actions) {
@@ -120,7 +116,7 @@ internal class SummaryNotificationCreator(
     }
 
     private fun NotificationBuilder.addMarkAllAsReadAction(
-        account: LegacyAccount,
+        account: Account,
         notificationData: SummaryInboxNotificationData,
     ) {
         val icon = resourceProvider.iconMarkAsRead
@@ -132,7 +128,7 @@ internal class SummaryNotificationCreator(
     }
 
     private fun NotificationBuilder.addDeleteAllAction(
-        account: LegacyAccount,
+        account: Account,
         notificationData: SummaryInboxNotificationData,
     ) {
         val icon = resourceProvider.iconDelete
@@ -143,9 +139,8 @@ internal class SummaryNotificationCreator(
         addAction(icon, title, action)
     }
 
-    @Suppress("NestedBlockDepth")
     private fun NotificationBuilder.setWearActions(
-        account: LegacyAccount,
+        account: Account,
         notificationData: SummaryInboxNotificationData,
     ) = apply {
         val wearableExtender = WearableExtender().apply {
@@ -162,7 +157,7 @@ internal class SummaryNotificationCreator(
     }
 
     private fun WearableExtender.addMarkAllAsReadAction(
-        account: LegacyAccount,
+        account: Account,
         notificationData: SummaryInboxNotificationData,
     ) {
         val icon = resourceProvider.wearIconMarkAsRead
@@ -174,10 +169,7 @@ internal class SummaryNotificationCreator(
         addAction(markAsReadAction)
     }
 
-    private fun WearableExtender.addDeleteAllAction(
-        account: LegacyAccount,
-        notificationData: SummaryInboxNotificationData,
-    ) {
+    private fun WearableExtender.addDeleteAllAction(account: Account, notificationData: SummaryInboxNotificationData) {
         val icon = resourceProvider.wearIconDelete
         val title = resourceProvider.actionDeleteAll()
         val messageReferences = notificationData.messageReferences
@@ -187,10 +179,7 @@ internal class SummaryNotificationCreator(
         addAction(deleteAction)
     }
 
-    private fun WearableExtender.addArchiveAllAction(
-        account: LegacyAccount,
-        notificationData: SummaryInboxNotificationData,
-    ) {
+    private fun WearableExtender.addArchiveAllAction(account: Account, notificationData: SummaryInboxNotificationData) {
         val icon = resourceProvider.wearIconArchive
         val title = resourceProvider.actionArchiveAll()
         val messageReferences = notificationData.messageReferences

@@ -3,10 +3,9 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.core.account)
     implementation(projects.legacy.ui.legacy)
     implementation(projects.legacy.core)
-    implementation(projects.core.android.account)
+    implementation(projects.legacy.account)
 
     implementation(libs.preferencex)
     implementation(libs.timber)

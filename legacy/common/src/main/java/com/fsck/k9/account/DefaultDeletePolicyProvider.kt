@@ -1,7 +1,7 @@
 package com.fsck.k9.account
 
 import app.k9mail.core.common.mail.Protocols
-import net.thunderbird.core.android.account.DeletePolicy
+import app.k9mail.legacy.account.Account.DeletePolicy
 
 class DefaultDeletePolicyProvider : DeletePolicyProvider {
     override fun getDeletePolicy(accountType: String): DeletePolicy {

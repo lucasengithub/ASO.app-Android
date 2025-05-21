@@ -21,5 +21,4 @@ class Commands {
     public static final String UID_COPY = "UID COPY";
     public static final String UID_MOVE = "UID MOVE";
     public static final String UID_EXPUNGE = "UID EXPUNGE";
-    public static final String ENABLE = "ENABLE UTF8=ACCEPT";
 }

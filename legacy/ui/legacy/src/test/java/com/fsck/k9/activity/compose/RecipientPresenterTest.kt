@@ -1,6 +1,7 @@
 package com.fsck.k9.activity.compose
 
 import androidx.test.core.app.ApplicationProvider
+import app.k9mail.legacy.account.Account
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
@@ -23,7 +24,6 @@ import com.fsck.k9.message.ComposePgpEnableByDefaultDecider
 import com.fsck.k9.message.ComposePgpInlineDecider
 import com.fsck.k9.view.RecipientSelectView.Recipient
 import kotlin.test.assertNotNull
-import net.thunderbird.core.android.account.LegacyAccount
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
@@ -56,7 +56,7 @@ class RecipientPresenterTest : K9RobolectricTest() {
         }
     }
     private val recipientMvpView = mock<RecipientMvpView>()
-    private val account = mock<LegacyAccount>()
+    private val account = mock<Account>()
     private val composePgpInlineDecider = mock<ComposePgpInlineDecider>()
     private val composePgpEnableByDefaultDecider = mock<ComposePgpEnableByDefaultDecider>()
     private val autocryptStatusInteractor = mock<AutocryptStatusInteractor>()

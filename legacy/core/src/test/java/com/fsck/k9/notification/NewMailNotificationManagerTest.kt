@@ -1,6 +1,7 @@
 package com.fsck.k9.notification
 
 import app.k9mail.core.testing.TestClock
+import app.k9mail.legacy.account.Account
 import app.k9mail.legacy.mailstore.MessageStoreManager
 import app.k9mail.legacy.message.controller.MessageReference
 import assertk.assertThat
@@ -20,7 +21,6 @@ import com.fsck.k9.mailstore.LocalStoreProvider
 import com.fsck.k9.mailstore.NotificationMessage
 import kotlin.test.assertNotNull
 import kotlinx.datetime.Instant
-import net.thunderbird.core.android.account.LegacyAccount
 import org.junit.Test
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
@@ -360,8 +360,8 @@ class NewMailNotificationManagerTest {
         }
     }
 
-    private fun createAccount(): LegacyAccount {
-        return LegacyAccount(ACCOUNT_UUID).apply {
+    private fun createAccount(): Account {
+        return Account(ACCOUNT_UUID).apply {
             name = ACCOUNT_NAME
             chipColor = ACCOUNT_COLOR
         }

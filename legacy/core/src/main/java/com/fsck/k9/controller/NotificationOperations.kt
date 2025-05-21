@@ -1,13 +1,13 @@
 package com.fsck.k9.controller
 
+import app.k9mail.legacy.account.Account
+import app.k9mail.legacy.account.AccountManager
 import app.k9mail.legacy.mailstore.MessageStoreManager
+import app.k9mail.legacy.search.LocalSearch
 import com.fsck.k9.notification.NotificationController
 import com.fsck.k9.search.isNewMessages
 import com.fsck.k9.search.isSingleFolder
 import com.fsck.k9.search.isUnifiedInbox
-import net.thunderbird.core.android.account.AccountManager
-import net.thunderbird.core.android.account.LegacyAccount
-import net.thunderbird.feature.search.LocalSearch
 
 internal class NotificationOperations(
     private val notificationController: NotificationController,
@@ -51,13 +51,13 @@ internal class NotificationOperations(
         }
     }
 
-    private fun clearNotifications(account: LegacyAccount, folderId: Long) {
+    private fun clearNotifications(account: Account, folderId: Long) {
         notificationController.clearNewMailNotifications(account) { messageReferences ->
             messageReferences.filter { messageReference -> messageReference.folderId == folderId }
         }
     }
 
-    private fun LocalSearch.firstAccount(): LegacyAccount? {
+    private fun LocalSearch.firstAccount(): Account? {
         return accountManager.getAccount(accountUuids.first())
     }
 }

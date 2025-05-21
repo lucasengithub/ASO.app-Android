@@ -10,6 +10,8 @@ import app.k9mail.core.android.common.contact.ContactPermissionResolver
 import app.k9mail.core.android.common.contact.ContactRepository
 import app.k9mail.core.common.mail.toEmailAddressOrNull
 import app.k9mail.core.mail.folder.api.Folder
+import app.k9mail.legacy.account.Account
+import app.k9mail.legacy.account.AccountManager
 import app.k9mail.legacy.mailstore.FolderRepository
 import app.k9mail.legacy.message.controller.MessageReference
 import app.k9mail.legacy.ui.folder.FolderNameFormatter
@@ -28,8 +30,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
-import net.thunderbird.core.android.account.AccountManager
-import net.thunderbird.core.android.account.LegacyAccount
 
 @Suppress("TooManyFunctions")
 internal class MessageDetailsViewModel(
@@ -119,13 +119,12 @@ internal class MessageDetailsViewModel(
         val messageCryptoDisplayStatus = MessageCryptoDisplayStatus.fromResultAnnotation(this)
         return CryptoDetails(
             cryptoStatus = messageCryptoDisplayStatus,
-            isClickable = messageCryptoDisplayStatus.hasAssociatedKey() ||
-                messageCryptoDisplayStatus.isUnknownKey ||
+            isClickable = messageCryptoDisplayStatus.hasAssociatedKey() || messageCryptoDisplayStatus.isUnknownKey ||
                 hasOpenPgpInsecureWarningPendingIntent(),
         )
     }
 
-    private fun List<Address>.toParticipants(account: LegacyAccount): List<Participant> {
+    private fun List<Address>.toParticipants(account: Account): List<Participant> {
         return this.map { address ->
             val displayName = participantFormatter.getDisplayName(address, account)
             val emailAddress = address.address

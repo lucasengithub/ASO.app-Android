@@ -1,12 +1,12 @@
 package com.fsck.k9.notification
 
+import app.k9mail.legacy.account.Account
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.containsNoDuplicates
 import assertk.assertions.doesNotContain
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
-import net.thunderbird.core.android.account.LegacyAccount
 import org.junit.Test
 
 class NotificationIdsTest {
@@ -99,7 +99,7 @@ class NotificationIdsTest {
         return listOf(NotificationIds.PUSH_NOTIFICATION_ID, NotificationIds.BACKGROUND_WORK_NOTIFICATION_ID)
     }
 
-    private fun getAccountNotificationIds(account: LegacyAccount): List<Int> {
+    private fun getAccountNotificationIds(account: Account): List<Int> {
         return listOf(
             NotificationIds.getSendFailedNotificationId(account),
             NotificationIds.getCertificateErrorNotificationId(account, true),
@@ -111,14 +111,14 @@ class NotificationIdsTest {
         ) + getNewMessageNotificationIds(account)
     }
 
-    private fun getNewMessageNotificationIds(account: LegacyAccount): Array<Int> {
+    private fun getNewMessageNotificationIds(account: Account): Array<Int> {
         return (0 until MAX_NUMBER_OF_NEW_MESSAGE_NOTIFICATIONS).map { index ->
             NotificationIds.getSingleMessageNotificationId(account, index)
         }.toTypedArray()
     }
 
-    private fun createAccount(accountNumber: Int): LegacyAccount {
-        return LegacyAccount("uuid").apply {
+    private fun createAccount(accountNumber: Int): Account {
+        return Account("uuid").apply {
             this.accountNumber = accountNumber
         }
     }

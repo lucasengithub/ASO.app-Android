@@ -1,7 +1,7 @@
 package com.fsck.k9.notification
 
-import net.thunderbird.core.android.account.LegacyAccount
-import net.thunderbird.feature.notification.NotificationSettings
+import app.k9mail.legacy.account.Account
+import app.k9mail.legacy.notification.NotificationSettings
 
 /**
  * Converts the [NotificationConfiguration] read from a `NotificationChannel` into a [NotificationSettings] instance.
@@ -10,10 +10,7 @@ class NotificationConfigurationConverter(
     private val notificationLightDecoder: NotificationLightDecoder,
     private val notificationVibrationDecoder: NotificationVibrationDecoder,
 ) {
-    fun convert(
-        account: LegacyAccount,
-        notificationConfiguration: NotificationConfiguration,
-    ): NotificationSettings {
+    fun convert(account: Account, notificationConfiguration: NotificationConfiguration): NotificationSettings {
         val light = notificationLightDecoder.decode(
             isBlinkLightsEnabled = notificationConfiguration.isBlinkLightsEnabled,
             lightColor = notificationConfiguration.lightColor,

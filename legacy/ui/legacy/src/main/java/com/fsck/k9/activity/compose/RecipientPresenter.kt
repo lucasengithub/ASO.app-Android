@@ -11,11 +11,13 @@ import android.os.Bundle
 import android.view.Menu
 import androidx.core.content.ContextCompat
 import androidx.loader.app.LoaderManager
+import app.k9mail.legacy.account.Account
 import com.fsck.k9.K9
 import com.fsck.k9.activity.compose.ComposeCryptoStatus.AttachErrorState
 import com.fsck.k9.activity.compose.ComposeCryptoStatus.SendErrorState
 import com.fsck.k9.autocrypt.AutocryptDraftStateHeader
 import com.fsck.k9.autocrypt.AutocryptDraftStateHeaderParser
+import com.fsck.k9.contact.ContactIntentHelper
 import com.fsck.k9.helper.MailTo
 import com.fsck.k9.helper.ReplyToParser
 import com.fsck.k9.mail.Address
@@ -30,9 +32,6 @@ import com.fsck.k9.message.MessageBuilder
 import com.fsck.k9.message.PgpMessageBuilder
 import com.fsck.k9.ui.R
 import com.fsck.k9.view.RecipientSelectView.Recipient
-import net.thunderbird.core.android.account.AccountDefaultsProvider.Companion.NO_OPENPGP_KEY
-import net.thunderbird.core.android.account.LegacyAccount
-import net.thunderbird.core.contact.ContactIntentHelper
 import org.openintents.openpgp.OpenPgpApiManager
 import org.openintents.openpgp.OpenPgpApiManager.OpenPgpApiManagerCallback
 import org.openintents.openpgp.OpenPgpApiManager.OpenPgpProviderError
@@ -53,13 +52,12 @@ private const val REQUEST_CODE_AUTOCRYPT = 5
 
 private const val PGP_DIALOG_DISPLAY_THRESHOLD = 2
 
-@Suppress("LongParameterList")
 class RecipientPresenter(
     private val context: Context,
     loaderManager: LoaderManager,
     private val openPgpApiManager: OpenPgpApiManager,
     private val recipientMvpView: RecipientMvpView,
-    account: LegacyAccount,
+    account: Account,
     private val composePgpInlineDecider: ComposePgpInlineDecider,
     private val composePgpEnableByDefaultDecider: ComposePgpEnableByDefaultDecider,
     private val autocryptStatusInteractor: AutocryptStatusInteractor,
@@ -67,7 +65,7 @@ class RecipientPresenter(
     private val draftStateHeaderParser: AutocryptDraftStateHeaderParser,
 ) {
     private var isToAddressAdded: Boolean = false
-    private lateinit var account: LegacyAccount
+    private lateinit var account: Account
     private var alwaysBccAddresses: Array<Address>? = null
     private var hasContactPicker: Boolean? = null
     private var isReplyToEncryptedMessage = false
@@ -329,7 +327,7 @@ class RecipientPresenter(
         menu.findItem(R.id.add_from_contacts).isVisible = hasContactPermission() && hasContactPicker()
     }
 
-    fun onSwitchAccount(account: LegacyAccount) {
+    fun onSwitchAccount(account: Account) {
         this.account = account
 
         if (account.isAlwaysShowCcBcc) {
@@ -397,7 +395,7 @@ class RecipientPresenter(
 
         val openPgpProviderState = openPgpApiManager.openPgpProviderState
         var accountCryptoKey: Long? = account.openPgpKey
-        if (accountCryptoKey == NO_OPENPGP_KEY) {
+        if (accountCryptoKey == Account.NO_OPENPGP_KEY) {
             accountCryptoKey = null
         }
 
@@ -633,10 +631,7 @@ class RecipientPresenter(
 
     private fun isContactPickerAvailable(): Boolean {
         val resolveInfoList =
-            context.packageManager.queryIntentActivities(
-                ContactIntentHelper.getContactPickerIntent(),
-                0,
-            )
+            context.packageManager.queryIntentActivities(ContactIntentHelper.getContactPickerIntent(), 0)
         return resolveInfoList.isNotEmpty()
     }
 

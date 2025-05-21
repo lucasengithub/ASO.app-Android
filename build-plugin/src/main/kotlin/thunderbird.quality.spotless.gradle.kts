@@ -5,44 +5,27 @@ plugins {
 }
 
 configure<SpotlessExtension> {
-    kotlin {
-        target(
-            "src/*/java/*.kt",
-            "src/*/kotlin/*.kt",
-            "src/*/java/**/*.kt",
-            "src/*/kotlin/**/*.kt",
-        )
+    configureKotlinCheck(
+        targets = listOf(
+            "**/*.kt",
+        ),
+        project = project,
+        libs = libs,
+    )
 
-        ktlint(libs.versions.ktlint.get())
-            .setEditorConfigPath("${project.rootProject.projectDir}/.editorconfig")
-            .editorConfigOverride(kotlinEditorConfigOverride)
-    }
-
-    kotlinGradle {
-        target(
+    configureKotlinGradleCheck(
+        targets = listOf(
             "*.gradle.kts",
-        )
+        ),
+        project = project,
+        libs = libs,
+    )
 
-        ktlint(libs.versions.ktlint.get())
-            .setEditorConfigPath("${project.rootProject.projectDir}/.editorconfig")
-            .editorConfigOverride(
-                mapOf(
-                    "ktlint_code_style" to "intellij_idea",
-                    "ktlint_standard_function-expression-body" to "disabled",
-                    "ktlint_standard_function-signature" to "disabled",
-                ),
-            )
-    }
-
-    flexmark {
-        target(
+    configureMarkdownCheck(
+        listOf(
             "*.md",
-        )
-        flexmark()
-    }
+        ),
+    )
 
-    format("misc") {
-        target(".gitignore")
-        trimTrailingWhitespace()
-    }
+    configureMiscCheck()
 }

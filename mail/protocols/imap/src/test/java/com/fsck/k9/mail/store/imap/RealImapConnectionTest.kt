@@ -19,12 +19,12 @@ import com.fsck.k9.mail.AuthenticationFailedException
 import com.fsck.k9.mail.ConnectionSecurity
 import com.fsck.k9.mail.K9MailLib
 import com.fsck.k9.mail.MissingCapabilityException
+import com.fsck.k9.mail.SystemOutLogger
+import com.fsck.k9.mail.XOAuth2ChallengeParserTest
+import com.fsck.k9.mail.helpers.TestTrustedSocketFactory
 import com.fsck.k9.mail.oauth.OAuth2TokenProvider
 import com.fsck.k9.mail.ssl.TrustedSocketFactory
 import com.fsck.k9.mail.store.imap.mockserver.MockImapServer
-import com.fsck.k9.mail.testing.SystemOutLogger
-import com.fsck.k9.mail.testing.XOAuth2ChallengeParserTestData
-import com.fsck.k9.mail.testing.security.TestTrustedSocketFactory
 import java.io.IOException
 import java.net.UnknownHostException
 import okio.ByteString.Companion.encodeUtf8
@@ -46,7 +46,7 @@ private val XOAUTH_STRING_RETRY = "user=$USERNAME\u0001auth=Bearer $XOAUTH_TOKEN
 private val OAUTHBEARER_STRING = "n,a=$USERNAME,\u0001auth=Bearer $XOAUTH_TOKEN\u0001\u0001".base64()
 
 class RealImapConnectionTest {
-    private var socketFactory = TestTrustedSocketFactory
+    private var socketFactory = TestTrustedSocketFactory.newInstance()
     private var oAuth2TokenProvider = TestTokenProvider()
 
     @Before
@@ -411,7 +411,7 @@ class RealImapConnectionTest {
         val server = MockImapServer().apply {
             preAuthenticationDialog(capabilities = "SASL-IR AUTH=XOAUTH AUTH=XOAUTH2")
             expect("2 AUTHENTICATE XOAUTH2 $XOAUTH_STRING")
-            output("+ ${XOAuth2ChallengeParserTestData.STATUS_401_RESPONSE}")
+            output("+ ${XOAuth2ChallengeParserTest.STATUS_401_RESPONSE}")
             expect("")
             output("2 NO SASL authentication failed")
         }
@@ -429,7 +429,7 @@ class RealImapConnectionTest {
         val server = MockImapServer().apply {
             preAuthenticationDialog(capabilities = "SASL-IR AUTH=XOAUTH AUTH=XOAUTH2")
             expect("2 AUTHENTICATE XOAUTH2 $XOAUTH_STRING")
-            output("+ ${XOAuth2ChallengeParserTestData.STATUS_400_RESPONSE}")
+            output("+ ${XOAuth2ChallengeParserTest.STATUS_400_RESPONSE}")
             expect("")
             output("2 NO SASL authentication failed")
             expect("3 AUTHENTICATE XOAUTH2 $XOAUTH_STRING_RETRY")
@@ -449,7 +449,7 @@ class RealImapConnectionTest {
         val server = MockImapServer().apply {
             preAuthenticationDialog(capabilities = "SASL-IR AUTH=XOAUTH AUTH=XOAUTH2")
             expect("2 AUTHENTICATE XOAUTH2 $XOAUTH_STRING")
-            output("+ ${XOAuth2ChallengeParserTestData.INVALID_RESPONSE}")
+            output("+ ${XOAuth2ChallengeParserTest.INVALID_RESPONSE}")
             expect("")
             output("2 NO SASL authentication failed")
             expect("3 AUTHENTICATE XOAUTH2 $XOAUTH_STRING_RETRY")
@@ -470,7 +470,7 @@ class RealImapConnectionTest {
         val server = MockImapServer().apply {
             preAuthenticationDialog(capabilities = "SASL-IR AUTH=XOAUTH AUTH=XOAUTH2")
             expect("2 AUTHENTICATE XOAUTH2 $XOAUTH_STRING")
-            output("+ ${XOAuth2ChallengeParserTestData.MISSING_STATUS_RESPONSE}")
+            output("+ ${XOAuth2ChallengeParserTest.MISSING_STATUS_RESPONSE}")
             expect("")
             output("2 NO SASL authentication failed")
             expect("3 AUTHENTICATE XOAUTH2 $XOAUTH_STRING_RETRY")
@@ -612,10 +612,7 @@ class RealImapConnectionTest {
                     "APPENDLIMIT=35651584",
             )
             output("2 OK")
-            expect("3 ENABLE UTF8=ACCEPT")
-            output("* ENABLED")
-            output("3 OK")
-            simplePostAuthenticationDialog(tag = 4)
+            simplePostAuthenticationDialog(tag = 3)
         }
         val imapConnection = startServerAndCreateImapConnection(server, authType = AuthType.PLAIN)
 
@@ -774,42 +771,6 @@ class RealImapConnectionTest {
             .hasMessage("Command: STARTTLS; response: #2# [NO]")
 
         server.verifyConnectionClosed()
-        server.verifyInteractionCompleted()
-    }
-
-    @Test
-    fun `open() with ENABLE capability should try to enable UTF8=ACCEPT`() {
-        val server = MockImapServer().apply {
-            simplePreAuthAndLoginDialog(postAuthCapabilities = "ENABLE")
-            expect("3 ENABLE UTF8=ACCEPT")
-            output("* ENABLED")
-            output("3 OK")
-            simplePostAuthenticationDialog(tag = 4)
-        }
-        val imapConnection = startServerAndCreateImapConnection(server, useCompression = true)
-
-        imapConnection.open()
-        assertThat(imapConnection.isUtf8AcceptCapable).isFalse()
-
-        server.verifyConnectionStillOpen()
-        server.verifyInteractionCompleted()
-    }
-
-    @Test
-    fun `open() with ENABLE and UTF8=ACCEPT capabilities should enable UTF8=ACCEPT`() {
-        val server = MockImapServer().apply {
-            simplePreAuthAndLoginDialog(postAuthCapabilities = "ENABLE UTF8=ACCEPT")
-            expect("3 ENABLE UTF8=ACCEPT")
-            output("* ENABLED UTF8=ACCEPT")
-            output("3 OK")
-            simplePostAuthenticationDialog(tag = 4)
-        }
-        val imapConnection = startServerAndCreateImapConnection(server, useCompression = true)
-
-        imapConnection.open()
-        assertThat(imapConnection.isUtf8AcceptCapable).isTrue()
-
-        server.verifyConnectionStillOpen()
         server.verifyInteractionCompleted()
     }
 
@@ -1272,7 +1233,7 @@ class RealImapConnectionTest {
     }
 }
 
-class TestTokenProvider(override val primaryEmail: String? = null) : OAuth2TokenProvider {
+class TestTokenProvider : OAuth2TokenProvider {
     private var invalidationCount = 0
 
     override fun getToken(timeoutMillis: Long): String {

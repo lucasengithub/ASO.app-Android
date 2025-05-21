@@ -6,7 +6,6 @@ import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -32,6 +31,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextDecoration
 import app.k9mail.core.common.provider.BrandNameProvider
 import app.k9mail.core.ui.compose.designsystem.atom.button.ButtonFilled
@@ -116,7 +116,7 @@ private fun AlreadyUsingThunderbirdCard(onQrCodeScan: () -> Unit) {
                 .padding(bottom = MainTheme.spacings.double),
         )
 
-        TextBodyMedium(
+        TextBodyMediumFullLineHeight(
             text = stringResource(R.string.onboarding_migration_thunderbird_qr_code_import_instructions_intro),
         )
 
@@ -126,10 +126,7 @@ private fun AlreadyUsingThunderbirdCard(onQrCodeScan: () -> Unit) {
                 stringResource(R.string.onboarding_migration_thunderbird_qr_code_import_instructions_bullet_2_v2),
             ),
             modifier = Modifier
-                .padding(
-                    top = MainTheme.spacings.half,
-                    bottom = MainTheme.spacings.double,
-                ),
+                .padding(bottom = MainTheme.spacings.double),
         )
 
         ButtonFilled(
@@ -248,17 +245,27 @@ private fun BulletList(
     items: ImmutableList<String>,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(MainTheme.spacings.half),
-    ) {
+    Column(modifier = modifier) {
         for (item in items) {
             Row {
-                TextBodyMedium(text = " \u2022 ")
-                TextBodyMedium(text = item)
+                TextBodyMediumFullLineHeight(text = " \u2022 ")
+                TextBodyMediumFullLineHeight(text = item)
             }
         }
     }
+}
+
+@Composable
+private fun TextBodyMediumFullLineHeight(text: String) {
+    // Disable line height trimming so that the space between TextBodyMediumFullLineHeight instances following each
+    // other is the same as the space between lines of text inside a single TextBodyMedium.
+    TextBodyMedium(
+        text = text,
+        lineHeightStyle = LineHeightStyle(
+            alignment = LineHeightStyle.Alignment.Proportional,
+            trim = LineHeightStyle.Trim.None,
+        ),
+    )
 }
 
 private fun Context.launchLearnHowToUpdateThunderbird() {

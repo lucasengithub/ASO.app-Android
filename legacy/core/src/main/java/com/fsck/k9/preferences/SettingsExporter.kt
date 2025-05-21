@@ -3,6 +3,7 @@ package com.fsck.k9.preferences
 import android.content.ContentResolver
 import android.net.Uri
 import android.util.Xml
+import app.k9mail.legacy.account.Account
 import app.k9mail.legacy.mailstore.FolderRepository
 import com.fsck.k9.AccountPreferenceSerializer.Companion.ACCOUNT_DESCRIPTION_KEY
 import com.fsck.k9.AccountPreferenceSerializer.Companion.IDENTITY_DESCRIPTION_KEY
@@ -17,7 +18,6 @@ import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
-import net.thunderbird.core.android.account.LegacyAccount
 import org.xmlpull.v1.XmlSerializer
 import timber.log.Timber
 
@@ -66,7 +66,7 @@ class SettingsExporter(
 
             val storage = preferences.storage
 
-            val prefs: Map<String, Any> = storage.getAll().toSortedMap()
+            val prefs: Map<String, Any> = storage.all.toSortedMap()
             if (includeGlobals) {
                 serializer.startTag(null, GLOBAL_ELEMENT)
                 writeSettings(serializer, prefs)
@@ -122,10 +122,9 @@ class SettingsExporter(
         }
     }
 
-    @Suppress("LongMethod", "CyclomaticComplexMethod", "NestedBlockDepth")
     private fun writeAccount(
         serializer: XmlSerializer,
-        account: LegacyAccount,
+        account: Account,
         prefs: Map<String, Any>,
         includePasswords: Boolean,
     ) {
@@ -273,7 +272,7 @@ class SettingsExporter(
         serializer: XmlSerializer,
         keyPart: String,
         valueString: String,
-        account: LegacyAccount,
+        account: Account,
     ) {
         val versionedSetting = AccountSettingsDescriptions.SETTINGS[keyPart]
         if (versionedSetting != null) {
@@ -298,7 +297,7 @@ class SettingsExporter(
     }
 
     private fun writeFolderNameSettings(
-        account: LegacyAccount,
+        account: Account,
         folderRepository: FolderRepository,
         serializer: XmlSerializer,
     ) {

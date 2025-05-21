@@ -11,7 +11,6 @@ import android.os.SystemClock;
 
 import com.fsck.k9.preferences.K9StoragePersister.StoragePersistOperationCallback;
 import com.fsck.k9.preferences.K9StoragePersister.StoragePersistOperations;
-import net.thunderbird.core.preferences.Storage;
 import timber.log.Timber;
 
 
@@ -75,7 +74,7 @@ public class K9StorageEditor implements StorageEditor {
         long endTime = SystemClock.elapsedRealtime();
         Timber.i("Preferences commit took %d ms", endTime - startTime);
 
-        return new DefaultStorage(newValues);
+        return new Storage(newValues);
     }
 
     @Override

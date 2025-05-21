@@ -1,16 +1,12 @@
 package com.fsck.k9.notification
 
-import net.thunderbird.feature.notification.NotificationLight
+import app.k9mail.legacy.notification.NotificationLight
 
 /**
  * Converts the "blink lights" values read from a `NotificationChannel` into [NotificationLight].
  */
 class NotificationLightDecoder {
-    fun decode(
-        isBlinkLightsEnabled: Boolean,
-        lightColor: Int,
-        accountColor: Int,
-    ): NotificationLight {
+    fun decode(isBlinkLightsEnabled: Boolean, lightColor: Int, accountColor: Int): NotificationLight {
         if (!isBlinkLightsEnabled) return NotificationLight.Disabled
 
         return when (lightColor.rgb) {

@@ -55,7 +55,6 @@ internal class RealImapConnection(
     private var responseParser: ImapResponseParser? = null
     private var nextCommandTag = 0
     private var capabilities = emptySet<String>()
-    private var enabled = emptySet<String>()
     private var stacktraceForClose: Exception? = null
     private var open = false
     private var retryOAuthWithNewToken = true
@@ -99,7 +98,6 @@ internal class RealImapConnection(
 
             enableCompressionIfRequested()
             sendClientInfoIfSupported()
-            enableCapabilitiesIfSupported()
 
             retrievePathPrefixIfNecessary()
             retrievePathDelimiterIfNecessary()
@@ -127,8 +125,7 @@ internal class RealImapConnection(
     @get:Synchronized
     override val isConnected: Boolean
         get() {
-            return inputStream != null &&
-                imapOutputStream != null &&
+            return inputStream != null && imapOutputStream != null &&
                 socket.let { socket ->
                     socket != null && socket.isConnected && !socket.isClosed
                 }
@@ -254,21 +251,6 @@ internal class RealImapConnection(
 
         if (!extractCapabilities(responses)) {
             throw MessagingException("Invalid CAPABILITY response received")
-        }
-    }
-
-    private fun enableCapabilitiesIfSupported() {
-        if (!hasCapability(Capabilities.ENABLE)) {
-            return
-        }
-
-        try {
-            val responses = executeSimpleCommand(Commands.ENABLE)
-            val enabledResponse = EnabledResponse.parse(responses) ?: return
-            enabled = enabledResponse.capabilities
-            responseParser?.setUtf8Accepted(isUtf8AcceptCapable)
-        } catch (e: NegativeImapResponseException) {
-            Timber.d(e, "Ignoring negative response to ENABLE command")
         }
     }
 
@@ -403,7 +385,7 @@ internal class RealImapConnection(
         val oauthTokenProvider = checkNotNull(oauthTokenProvider)
         val responseParser = checkNotNull(responseParser)
 
-        val token = oauthTokenProvider.getToken(OAuth2TokenProvider.OAUTH2_TIMEOUT)
+        val token = oauthTokenProvider.getToken(OAuth2TokenProvider.OAUTH2_TIMEOUT.toLong())
 
         val authString = method.buildInitialClientResponse(settings.username, token)
         val tag = sendSaslIrCommand(method.command, authString, true)
@@ -698,9 +680,6 @@ internal class RealImapConnection(
 
     override val isUidPlusCapable: Boolean
         get() = capabilities.contains(Capabilities.UID_PLUS)
-
-    override val isUtf8AcceptCapable: Boolean
-        get() = enabled.contains(Capabilities.UTF8_ACCEPT)
 
     @Synchronized
     override fun close() {

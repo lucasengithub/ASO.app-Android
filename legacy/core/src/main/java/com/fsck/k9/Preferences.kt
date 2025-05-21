@@ -2,9 +2,14 @@ package com.fsck.k9
 
 import androidx.annotation.GuardedBy
 import androidx.annotation.RestrictTo
+import app.k9mail.legacy.account.Account
+import app.k9mail.legacy.account.AccountManager
+import app.k9mail.legacy.account.AccountRemovedListener
+import app.k9mail.legacy.account.AccountsChangeListener
 import app.k9mail.legacy.di.DI
 import com.fsck.k9.mail.MessagingException
 import com.fsck.k9.mailstore.LocalStoreProvider
+import com.fsck.k9.preferences.Storage
 import com.fsck.k9.preferences.StorageEditor
 import com.fsck.k9.preferences.StoragePersister
 import java.util.LinkedList
@@ -20,34 +25,25 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOn
-import net.thunderbird.core.android.account.AccountDefaultsProvider
-import net.thunderbird.core.android.account.AccountDefaultsProvider.Companion.UNASSIGNED_ACCOUNT_NUMBER
-import net.thunderbird.core.android.account.AccountManager
-import net.thunderbird.core.android.account.AccountRemovedListener
-import net.thunderbird.core.android.account.AccountsChangeListener
-import net.thunderbird.core.android.account.LegacyAccount
-import net.thunderbird.core.preferences.Storage
 import timber.log.Timber
 
-@Suppress("MaxLineLength")
 class Preferences internal constructor(
     private val storagePersister: StoragePersister,
     private val localStoreProvider: LocalStoreProvider,
     private val accountPreferenceSerializer: AccountPreferenceSerializer,
     private val backgroundDispatcher: CoroutineDispatcher = Dispatchers.IO,
-    private val accountDefaultsProvider: AccountDefaultsProvider,
 ) : AccountManager {
     private val accountLock = Any()
     private val storageLock = Any()
 
     @GuardedBy("accountLock")
-    private var accountsMap: MutableMap<String, LegacyAccount>? = null
+    private var accountsMap: MutableMap<String, Account>? = null
 
     @GuardedBy("accountLock")
-    private var accountsInOrder = mutableListOf<LegacyAccount>()
+    private var accountsInOrder = mutableListOf<Account>()
 
     @GuardedBy("accountLock")
-    private var newAccount: LegacyAccount? = null
+    private var newAccount: Account? = null
     private val accountsChangeListeners = CopyOnWriteArraySet<AccountsChangeListener>()
     private val accountRemovedListeners = CopyOnWriteArraySet<AccountRemovedListener>()
 
@@ -79,22 +75,18 @@ class Preferences internal constructor(
 
     fun loadAccounts() {
         synchronized(accountLock) {
-            val accounts = mutableMapOf<String, LegacyAccount>()
-            val accountsInOrder = mutableListOf<LegacyAccount>()
+            val accounts = mutableMapOf<String, Account>()
+            val accountsInOrder = mutableListOf<Account>()
 
             val accountUuids = storage.getString("accountUuids", null)
             if (!accountUuids.isNullOrEmpty()) {
                 accountUuids.split(",").forEach { uuid ->
                     val existingAccount = accountsMap?.get(uuid)
-                    val account = existingAccount ?: LegacyAccount(
-                        uuid,
-                        K9::isSensitiveDebugLoggingEnabled,
-                    )
+                    val account = existingAccount ?: Account(uuid, K9::isSensitiveDebugLoggingEnabled)
                     accountPreferenceSerializer.loadAccount(account, storage)
 
                     accounts[uuid] = account
                     accountsInOrder.add(account)
-                    accountDefaultsProvider.applyOverwrites(account, storage)
                 }
             }
 
@@ -111,7 +103,7 @@ class Preferences internal constructor(
         }
     }
 
-    override fun getAccounts(): List<LegacyAccount> {
+    override fun getAccounts(): List<Account> {
         synchronized(accountLock) {
             if (accountsMap == null) {
                 loadAccounts()
@@ -121,10 +113,10 @@ class Preferences internal constructor(
         }
     }
 
-    private val completeAccounts: List<LegacyAccount>
+    private val completeAccounts: List<Account>
         get() = getAccounts().filter { it.isFinishedSetup }
 
-    override fun getAccount(accountUuid: String): LegacyAccount? {
+    override fun getAccount(accountUuid: String): Account? {
         synchronized(accountLock) {
             if (accountsMap == null) {
                 loadAccounts()
@@ -134,7 +126,7 @@ class Preferences internal constructor(
         }
     }
 
-    override fun getAccountFlow(accountUuid: String): Flow<LegacyAccount> {
+    override fun getAccountFlow(accountUuid: String): Flow<Account> {
         return callbackFlow {
             val initialAccount = getAccount(accountUuid)
             if (initialAccount == null) {
@@ -162,7 +154,7 @@ class Preferences internal constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun getAccountsFlow(): Flow<List<LegacyAccount>> {
+    override fun getAccountsFlow(): Flow<List<Account>> {
         return callbackFlow {
             send(completeAccounts)
 
@@ -178,15 +170,14 @@ class Preferences internal constructor(
             .flowOn(backgroundDispatcher)
     }
 
-    fun newAccount(): LegacyAccount {
+    fun newAccount(): Account {
         val accountUuid = UUID.randomUUID().toString()
         return newAccount(accountUuid)
     }
 
-    fun newAccount(accountUuid: String): LegacyAccount {
-        val account =
-            LegacyAccount(accountUuid, K9::isSensitiveDebugLoggingEnabled)
-        accountDefaultsProvider.applyDefaults(account)
+    fun newAccount(accountUuid: String): Account {
+        val account = Account(accountUuid, K9::isSensitiveDebugLoggingEnabled)
+        accountPreferenceSerializer.loadDefaults(account)
 
         synchronized(accountLock) {
             newAccount = account
@@ -197,7 +188,7 @@ class Preferences internal constructor(
         return account
     }
 
-    fun deleteAccount(account: LegacyAccount) {
+    fun deleteAccount(account: Account) {
         synchronized(accountLock) {
             accountsMap?.remove(account.uuid)
             accountsInOrder.remove(account)
@@ -215,10 +206,10 @@ class Preferences internal constructor(
         notifyAccountsChangeListeners()
     }
 
-    val defaultAccount: LegacyAccount?
+    val defaultAccount: Account?
         get() = getAccounts().firstOrNull()
 
-    override fun saveAccount(account: LegacyAccount) {
+    override fun saveAccount(account: Account) {
         ensureAssignedAccountNumber(account)
         processChangedValues(account)
 
@@ -226,20 +217,18 @@ class Preferences internal constructor(
             val editor = createStorageEditor()
             accountPreferenceSerializer.save(editor, storage, account)
             editor.commit()
-
-            loadAccounts()
         }
 
         notifyAccountsChangeListeners()
     }
 
-    private fun ensureAssignedAccountNumber(account: LegacyAccount) {
-        if (account.accountNumber != UNASSIGNED_ACCOUNT_NUMBER) return
+    private fun ensureAssignedAccountNumber(account: Account) {
+        if (account.accountNumber != Account.UNASSIGNED_ACCOUNT_NUMBER) return
 
         account.accountNumber = generateAccountNumber()
     }
 
-    private fun processChangedValues(account: LegacyAccount) {
+    private fun processChangedValues(account: Account) {
         if (account.isChangedVisibleLimits) {
             try {
                 localStoreProvider.getInstance(account).resetVisibleLimits(account.displayCount)
@@ -268,7 +257,7 @@ class Preferences internal constructor(
         return newAccountNumber
     }
 
-    override fun moveAccount(account: LegacyAccount, newPosition: Int) {
+    override fun moveAccount(account: Account, newPosition: Int) {
         synchronized(accountLock) {
             val storageEditor = createStorageEditor()
             accountPreferenceSerializer.move(storageEditor, account, storage, newPosition)
@@ -294,7 +283,7 @@ class Preferences internal constructor(
         accountsChangeListeners.remove(accountsChangeListener)
     }
 
-    private fun notifyAccountRemovedListeners(account: LegacyAccount) {
+    private fun notifyAccountRemovedListeners(account: Account) {
         for (listener in accountRemovedListeners) {
             listener.onAccountRemoved(account)
         }

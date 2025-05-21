@@ -15,7 +15,7 @@ dependencies {
 
     implementation(projects.feature.account.setup)
     implementation(projects.feature.account.edit)
-    implementation(projects.feature.navigation.drawer.api)
+    implementation(projects.feature.navigation.drawer)
     implementation(projects.feature.settings.import)
 
     implementation(projects.feature.widget.unread)
@@ -23,6 +23,7 @@ dependencies {
 
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.work.runtime)
     implementation(libs.preferencex)
     implementation(libs.timber)
     implementation(libs.kotlinx.coroutines.core)
@@ -34,6 +35,9 @@ dependencies {
     if (project.hasProperty("k9mail.enableLeakCanary") && project.property("k9mail.enableLeakCanary") == "true") {
         debugImplementation(libs.leakcanary.android)
     }
+
+    // Required for DependencyInjectionTest to be able to resolve OpenPgpApiManager
+    testImplementation(projects.plugins.openpgpApiLib.openpgpApi)
 
     testImplementation(libs.robolectric)
 }

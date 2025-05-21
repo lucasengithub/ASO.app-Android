@@ -2,18 +2,18 @@ package com.fsck.k9.notification
 
 import android.text.SpannableStringBuilder
 import app.k9mail.core.android.common.contact.ContactRepository
+import app.k9mail.legacy.account.Account
 import app.k9mail.legacy.message.extractors.PreviewResult.PreviewType
 import com.fsck.k9.K9
 import com.fsck.k9.helper.MessageHelper
 import com.fsck.k9.mail.Message
 import com.fsck.k9.mailstore.LocalMessage
-import net.thunderbird.core.android.account.LegacyAccount
 
 internal class NotificationContentCreator(
     private val resourceProvider: NotificationResourceProvider,
     private val contactRepository: ContactRepository,
 ) {
-    fun createFromMessage(account: LegacyAccount, message: LocalMessage): NotificationContent {
+    fun createFromMessage(account: Account, message: LocalMessage): NotificationContent {
         val sender = getMessageSender(account, message)
 
         return NotificationContent(
@@ -68,8 +68,7 @@ internal class NotificationContentCreator(
         return subject.ifEmpty { resourceProvider.noSubject() }
     }
 
-    @Suppress("ReturnCount")
-    private fun getMessageSender(account: LegacyAccount, message: Message): String? {
+    private fun getMessageSender(account: Account, message: Message): String? {
         val localContactRepository = if (K9.isShowContactName) contactRepository else null
         var isSelf = false
 

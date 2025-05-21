@@ -15,7 +15,6 @@ dependencies {
     implementation(projects.mail.protocols.imap)
 
     implementation(projects.feature.account.common)
-    implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.biometric)
 
     testImplementation(projects.core.ui.compose.testing)

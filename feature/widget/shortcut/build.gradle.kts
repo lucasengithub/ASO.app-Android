@@ -5,7 +5,7 @@ plugins {
 dependencies {
     implementation(projects.legacy.ui.legacy)
     implementation(projects.legacy.core)
-    implementation(projects.core.android.account)
+    implementation(projects.legacy.account)
 }
 
 android {

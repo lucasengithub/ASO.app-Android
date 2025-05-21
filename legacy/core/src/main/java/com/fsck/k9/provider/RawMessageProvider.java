@@ -16,6 +16,8 @@ import android.os.ParcelFileDescriptor;
 import android.provider.OpenableColumns;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import app.k9mail.legacy.account.Account;
 import app.k9mail.legacy.di.DI;
 import com.fsck.k9.Preferences;
 import app.k9mail.legacy.message.controller.MessageReference;
@@ -26,7 +28,6 @@ import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.mailstore.LocalStoreProvider;
-import net.thunderbird.core.android.account.LegacyAccount;
 import org.openintents.openpgp.util.OpenPgpApi.OpenPgpDataSource;
 import timber.log.Timber;
 
@@ -173,7 +174,7 @@ public class RawMessageProvider extends ContentProvider {
         long folderId = messageReference.getFolderId();
         String uid = messageReference.getUid();
 
-        LegacyAccount account = Preferences.getPreferences().getAccount(accountUuid);
+        Account account = Preferences.getPreferences().getAccount(accountUuid);
         if (account == null) {
             Timber.w("Account not found: %s", accountUuid);
             return null;

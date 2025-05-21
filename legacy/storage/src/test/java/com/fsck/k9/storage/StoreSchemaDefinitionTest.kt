@@ -3,6 +3,8 @@ package com.fsck.k9.storage
 import android.database.sqlite.SQLiteDatabase
 import androidx.core.content.contentValuesOf
 import app.k9mail.core.android.common.database.map
+import app.k9mail.legacy.account.Account
+import app.k9mail.legacy.account.Account.FolderMode
 import assertk.Assert
 import assertk.assertFailure
 import assertk.assertThat
@@ -18,8 +20,6 @@ import com.fsck.k9.mail.AuthType
 import com.fsck.k9.mail.ConnectionSecurity
 import com.fsck.k9.mail.ServerSettings
 import com.fsck.k9.mailstore.MigrationsHelper
-import net.thunderbird.core.android.account.FolderMode
-import net.thunderbird.core.android.account.LegacyAccount
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.doReturn
@@ -378,7 +378,7 @@ class StoreSchemaDefinitionTest : RobolectricTest() {
     private fun createStoreSchemaDefinition(): StoreSchemaDefinition {
         val account = createAccount()
         val migrationsHelper = object : MigrationsHelper {
-            override fun getAccount(): LegacyAccount {
+            override fun getAccount(): Account {
                 return account
             }
 
@@ -390,8 +390,8 @@ class StoreSchemaDefinitionTest : RobolectricTest() {
         return StoreSchemaDefinition(migrationsHelper)
     }
 
-    private fun createAccount(): LegacyAccount {
-        return mock<LegacyAccount> {
+    private fun createAccount(): Account {
+        return mock<Account> {
             on { legacyInboxFolder } doReturn "Inbox"
             on { importedTrashFolder } doReturn "Trash"
             on { importedDraftsFolder } doReturn "Drafts"

@@ -10,7 +10,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import app.k9mail.feature.account.setup.navigation.AccountSetupNavHost
-import app.k9mail.feature.account.setup.navigation.AccountSetupRoute
 import app.k9mail.feature.onboarding.migration.api.OnboardingMigrationManager
 import app.k9mail.feature.onboarding.permissions.domain.PermissionsDomainContract.UseCase.HasRuntimePermissions
 import app.k9mail.feature.onboarding.permissions.ui.PermissionsScreen
@@ -56,7 +55,7 @@ private fun NavController.navigateToPermissions() {
 @Suppress("LongMethod")
 @Composable
 fun OnboardingNavHost(
-    onFinish: (OnboardingRoute) -> Unit,
+    onFinish: (String?) -> Unit,
     hasRuntimePermissions: HasRuntimePermissions = koinInject(),
     onboardingMigrationManager: OnboardingMigrationManager = koinInject(),
     coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main),
@@ -68,7 +67,7 @@ fun OnboardingNavHost(
         if (hasRuntimePermissions()) {
             navController.navigateToPermissions()
         } else {
-            onFinish(OnboardingRoute.Onboarding(null))
+            onFinish(null)
         }
     }
 
@@ -102,17 +101,12 @@ fun OnboardingNavHost(
         composable(route = NESTED_NAVIGATION_ROUTE_ACCOUNT_SETUP) {
             AccountSetupNavHost(
                 onBack = { navController.popBackStack() },
-                onFinish = { route: AccountSetupRoute ->
-                    when (route) {
-                        is AccountSetupRoute.AccountSetup -> {
-                            val createdAccountUuid = route.accountId
-                            accountUuid = createdAccountUuid
-                            if (hasRuntimePermissions()) {
-                                navController.navigateToPermissions()
-                            } else {
-                                onFinish(OnboardingRoute.Onboarding(createdAccountUuid))
-                            }
-                        }
+                onFinish = { createdAccountUuid: String ->
+                    accountUuid = createdAccountUuid
+                    if (hasRuntimePermissions()) {
+                        navController.navigateToPermissions()
+                    } else {
+                        onFinish(createdAccountUuid)
                     }
                 },
             )
@@ -146,7 +140,7 @@ fun OnboardingNavHost(
 
         composable(route = NESTED_NAVIGATION_ROUTE_PERMISSIONS) {
             PermissionsScreen(
-                onNext = { onFinish(OnboardingRoute.Onboarding(accountUuid)) },
+                onNext = { onFinish(accountUuid) },
             )
         }
     }

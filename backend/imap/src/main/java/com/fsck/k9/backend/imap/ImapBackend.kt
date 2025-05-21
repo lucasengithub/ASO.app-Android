@@ -18,7 +18,7 @@ import com.fsck.k9.mail.transport.smtp.SmtpTransport
 class ImapBackend(
     private val accountName: String,
     backendStorage: BackendStorage,
-    internal val imapStore: ImapStore,
+    private val imapStore: ImapStore,
     private val powerManager: PowerManager,
     private val idleRefreshManager: IdleRefreshManager,
     private val pushConfigProvider: ImapPushConfigProvider,

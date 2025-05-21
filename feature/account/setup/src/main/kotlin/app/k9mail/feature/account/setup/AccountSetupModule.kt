@@ -14,8 +14,6 @@ import app.k9mail.feature.account.setup.domain.usecase.CreateAccount
 import app.k9mail.feature.account.setup.domain.usecase.GetAutoDiscovery
 import app.k9mail.feature.account.setup.domain.usecase.GetSpecialFolderOptions
 import app.k9mail.feature.account.setup.domain.usecase.ValidateSpecialFolderOptions
-import app.k9mail.feature.account.setup.navigation.AccountSetupNavigation
-import app.k9mail.feature.account.setup.navigation.DefaultAccountSetupNavigation
 import app.k9mail.feature.account.setup.ui.autodiscovery.AccountAutoDiscoveryContract
 import app.k9mail.feature.account.setup.ui.autodiscovery.AccountAutoDiscoveryValidator
 import app.k9mail.feature.account.setup.ui.autodiscovery.AccountAutoDiscoveryViewModel
@@ -30,8 +28,8 @@ import app.k9mail.feature.account.setup.ui.specialfolders.SpecialFoldersViewMode
 import com.fsck.k9.mail.folders.FolderFetcher
 import com.fsck.k9.mail.store.imap.ImapFolderFetcher
 import okhttp3.OkHttpClient
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
@@ -42,8 +40,6 @@ val featureAccountSetupModule: Module = module {
         featureAccountServerValidationModule,
         featureAccountServerSettingsModule,
     )
-
-    single<AccountSetupNavigation> { DefaultAccountSetupNavigation() }
 
     single<OkHttpClient> {
         OkHttpClient()

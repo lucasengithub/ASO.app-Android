@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
-import com.fsck.k9.mail.testing.security.TestKeyStoreProvider;
+import com.fsck.k9.mail.helpers.KeyStoreProvider;
 import com.jcraft.jzlib.JZlib;
 import com.jcraft.jzlib.ZOutputStream;
 import javax.net.ssl.KeyManagerFactory;
@@ -41,7 +41,7 @@ public class MockSmtpServer {
     private final Deque<SmtpInteraction> interactions = new ConcurrentLinkedDeque<>();
     private final CountDownLatch waitForConnectionClosed = new CountDownLatch(1);
     private final CountDownLatch waitForAllExpectedCommands = new CountDownLatch(1);
-    private final TestKeyStoreProvider keyStoreProvider;
+    private final KeyStoreProvider keyStoreProvider;
     private final Logger logger;
 
     private MockServerThread mockServerThread;
@@ -50,10 +50,10 @@ public class MockSmtpServer {
 
 
     public MockSmtpServer() {
-        this(TestKeyStoreProvider.INSTANCE, new DefaultLogger());
+        this(KeyStoreProvider.getInstance(), new DefaultLogger());
     }
 
-    public MockSmtpServer(TestKeyStoreProvider keyStoreProvider, Logger logger) {
+    public MockSmtpServer(KeyStoreProvider keyStoreProvider, Logger logger) {
         this.keyStoreProvider = keyStoreProvider;
         this.logger = logger;
     }
@@ -235,7 +235,7 @@ public class MockSmtpServer {
         private final CountDownLatch waitForConnectionClosed;
         private final CountDownLatch waitForAllExpectedCommands;
         private final Logger logger;
-        private final TestKeyStoreProvider keyStoreProvider;
+        private final KeyStoreProvider keyStoreProvider;
 
         private volatile boolean shouldStop = false;
         private volatile Socket clientSocket;
@@ -247,7 +247,7 @@ public class MockSmtpServer {
 
         public MockServerThread(ServerSocket serverSocket, Deque<SmtpInteraction> interactions,
                 CountDownLatch waitForConnectionClosed, CountDownLatch waitForAllExpectedCommands, Logger logger,
-                TestKeyStoreProvider keyStoreProvider) {
+                KeyStoreProvider keyStoreProvider) {
             super("MockSmtpServer");
             this.serverSocket = serverSocket;
             this.interactions = interactions;

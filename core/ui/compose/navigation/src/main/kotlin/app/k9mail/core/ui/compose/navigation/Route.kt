@@ -1,5 +1,8 @@
 package app.k9mail.core.ui.compose.navigation
 
+import android.net.Uri
+import androidx.core.net.toUri
+
 /**
  * A Route represents a destination in the app.
  *
@@ -9,10 +12,7 @@ package app.k9mail.core.ui.compose.navigation
  * @see Navigation
  */
 interface Route {
-    val basePath: String
+    val deepLink: String
 
-    /**
-     * The route to navigate to this screen.
-     */
-    fun route(): String
+    fun toDeepLinkUri(): Uri = deepLink.toUri()
 }

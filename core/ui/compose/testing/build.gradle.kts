@@ -11,7 +11,7 @@ dependencies {
     api(libs.turbine)
     api(libs.assertk)
 
-    implementation(projects.core.ui.compose.theme2.thunderbird)
+    implementation(projects.core.ui.compose.theme2.k9mail)
 
     implementation(libs.bundles.shared.jvm.test.compose)
 }

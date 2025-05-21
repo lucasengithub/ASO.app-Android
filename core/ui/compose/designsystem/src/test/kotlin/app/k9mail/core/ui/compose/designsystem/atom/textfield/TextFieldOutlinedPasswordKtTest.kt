@@ -5,21 +5,19 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.SemanticsNodeInteractionsProvider
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import app.k9mail.core.ui.compose.designsystem.R
 import app.k9mail.core.ui.compose.testing.ComposeTest
-import app.k9mail.core.ui.compose.testing.onNodeWithText
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isTrue
 import org.junit.Test
 
 private const val PASSWORD = "Password input"
-private const val PASSWORD_MASKED = "••••••••••••••"
 private const val TEST_TAG = "TextFieldOutlinedPassword"
 
 class TextFieldOutlinedPasswordKtTest : ComposeTest() {
@@ -33,7 +31,7 @@ class TextFieldOutlinedPasswordKtTest : ComposeTest() {
             )
         }
 
-        onNodeWithText(PASSWORD_MASKED).assertIsDisplayed()
+        onNodeWithText(PASSWORD).assertDoesNotExist()
     }
 
     @Test
@@ -47,7 +45,6 @@ class TextFieldOutlinedPasswordKtTest : ComposeTest() {
 
         onShowPasswordNode().performClick()
 
-        onNodeWithText(PASSWORD_MASKED).assertIsNotDisplayed()
         onNodeWithText(PASSWORD).assertIsDisplayed()
     }
 
@@ -63,7 +60,7 @@ class TextFieldOutlinedPasswordKtTest : ComposeTest() {
 
         onHidePasswordNode().performClick()
 
-        onNodeWithText(PASSWORD_MASKED).assertIsDisplayed()
+        onNodeWithText(PASSWORD).assertDoesNotExist()
     }
 
     @Test
@@ -123,7 +120,6 @@ class TextFieldOutlinedPasswordKtTest : ComposeTest() {
             )
         }
 
-        onNodeWithText(PASSWORD_MASKED).assertIsNotDisplayed()
         onNodeWithText(PASSWORD).assertIsDisplayed()
     }
 
@@ -138,7 +134,7 @@ class TextFieldOutlinedPasswordKtTest : ComposeTest() {
             )
         }
 
-        onNodeWithText(PASSWORD_MASKED).assertIsDisplayed()
+        onNodeWithText(PASSWORD).assertDoesNotExist()
     }
 
     @Test

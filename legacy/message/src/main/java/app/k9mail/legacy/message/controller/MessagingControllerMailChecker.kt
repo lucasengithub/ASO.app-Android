@@ -1,10 +1,10 @@
 package app.k9mail.legacy.message.controller
 
-import net.thunderbird.core.android.account.LegacyAccount
+import app.k9mail.legacy.account.Account
 
 interface MessagingControllerMailChecker {
     fun checkMail(
-        account: LegacyAccount?,
+        account: Account?,
         ignoreLastCheckedTime: Boolean,
         useManualWakeLock: Boolean,
         notify: Boolean,

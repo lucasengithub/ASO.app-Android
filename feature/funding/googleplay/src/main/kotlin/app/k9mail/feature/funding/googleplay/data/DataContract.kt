@@ -2,6 +2,7 @@ package app.k9mail.feature.funding.googleplay.data
 
 import android.app.Activity
 import app.k9mail.feature.funding.googleplay.domain.DomainContract.BillingError
+import app.k9mail.feature.funding.googleplay.domain.Outcome
 import app.k9mail.feature.funding.googleplay.domain.entity.Contribution
 import app.k9mail.feature.funding.googleplay.domain.entity.OneTimeContribution
 import app.k9mail.feature.funding.googleplay.domain.entity.RecurringContribution
@@ -9,7 +10,6 @@ import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesUpdatedListener
 import kotlinx.coroutines.flow.StateFlow
-import net.thunderbird.core.outcome.Outcome
 import com.android.billingclient.api.BillingClient as GoogleBillingClient
 import com.android.billingclient.api.BillingResult as GoogleBillingResult
 

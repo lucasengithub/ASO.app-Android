@@ -4,6 +4,7 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.IBinder
+import app.k9mail.legacy.account.Account
 import app.k9mail.legacy.message.controller.MessageReference
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
@@ -13,7 +14,6 @@ import com.fsck.k9.mail.Flag
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import net.thunderbird.core.android.account.LegacyAccount
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
 import timber.log.Timber
@@ -66,7 +66,7 @@ class NotificationActionService : Service() {
         return null
     }
 
-    private fun markMessagesAsRead(intent: Intent, account: LegacyAccount) {
+    private fun markMessagesAsRead(intent: Intent, account: Account) {
         Timber.i("NotificationActionService marking messages as read")
 
         val messageReferenceStrings = intent.getStringArrayListExtra(EXTRA_MESSAGE_REFERENCES)
@@ -97,7 +97,7 @@ class NotificationActionService : Service() {
         messagingController.archiveMessages(messageReferences)
     }
 
-    private fun markMessageAsSpam(intent: Intent, account: LegacyAccount) {
+    private fun markMessageAsSpam(intent: Intent, account: Account) {
         Timber.i("NotificationActionService moving messages to spam")
 
         val messageReferenceString = intent.getStringExtra(EXTRA_MESSAGE_REFERENCE)
@@ -120,7 +120,7 @@ class NotificationActionService : Service() {
         }
     }
 
-    private fun cancelNotifications(intent: Intent, account: LegacyAccount) {
+    private fun cancelNotifications(intent: Intent, account: Account) {
         if (intent.hasExtra(EXTRA_MESSAGE_REFERENCE)) {
             val messageReferenceString = intent.getStringExtra(EXTRA_MESSAGE_REFERENCE)
             val messageReference = MessageReference.parse(messageReferenceString)
@@ -183,7 +183,7 @@ class NotificationActionService : Service() {
             }
         }
 
-        fun createDismissAllMessagesIntent(context: Context, account: LegacyAccount): Intent {
+        fun createDismissAllMessagesIntent(context: Context, account: Account): Intent {
             return Intent(context, NotificationActionService::class.java).apply {
                 action = ACTION_DISMISS
                 putExtra(EXTRA_ACCOUNT_UUID, account.uuid)
@@ -223,7 +223,7 @@ class NotificationActionService : Service() {
 
         fun createArchiveAllIntent(
             context: Context,
-            account: LegacyAccount,
+            account: Account,
             messageReferences: List<MessageReference>,
         ): Intent {
             return Intent(context, NotificationActionService::class.java).apply {

@@ -12,10 +12,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.thunderbird.core.android.testing.RobolectricTest;
-import net.thunderbird.core.android.account.QuoteStyle;
+import app.k9mail.core.android.testing.RobolectricTest;
+import app.k9mail.legacy.account.Account.QuoteStyle;
 import com.fsck.k9.CoreResourceProvider;
-import net.thunderbird.core.android.account.Identity;
+import app.k9mail.legacy.account.Identity;
 import com.fsck.k9.TestCoreResourceProvider;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.BodyPart;

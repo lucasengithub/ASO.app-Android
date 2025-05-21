@@ -4,8 +4,9 @@ package com.fsck.k9.ui.message;
 import android.content.Context;
 import androidx.loader.content.AsyncTaskLoader;
 
-import net.thunderbird.core.android.account.LegacyAccount;
 import timber.log.Timber;
+
+import app.k9mail.legacy.account.Account;
 import app.k9mail.legacy.message.controller.MessageReference;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.mail.MessagingException;
@@ -14,12 +15,12 @@ import com.fsck.k9.mailstore.LocalMessage;
 
 public class LocalMessageLoader extends AsyncTaskLoader<LocalMessage> {
     private final MessagingController controller;
-    private final LegacyAccount account;
+    private final Account account;
     private final MessageReference messageReference;
     private final boolean onlyLoadMetadata;
     private LocalMessage message;
 
-    public LocalMessageLoader(Context context, MessagingController controller, LegacyAccount account,
+    public LocalMessageLoader(Context context, MessagingController controller, Account account,
             MessageReference messageReference, boolean onlyLoadMetaData) {
         super(context);
         this.controller = controller;

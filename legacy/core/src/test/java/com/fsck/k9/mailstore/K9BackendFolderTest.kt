@@ -2,6 +2,7 @@ package com.fsck.k9.mailstore
 
 import android.database.sqlite.SQLiteDatabase
 import androidx.core.content.contentValuesOf
+import app.k9mail.legacy.account.Account
 import app.k9mail.legacy.mailstore.MessageStoreManager
 import assertk.assertFailure
 import assertk.assertThat
@@ -23,7 +24,6 @@ import com.fsck.k9.mail.MessageDownloadState
 import com.fsck.k9.mail.internet.MimeMessage
 import com.fsck.k9.mail.internet.MimeMessageHelper
 import com.fsck.k9.mail.internet.TextBody
-import net.thunderbird.core.android.account.LegacyAccount
 import org.junit.After
 import org.junit.Test
 import org.koin.core.component.inject
@@ -34,7 +34,7 @@ class K9BackendFolderTest : K9RobolectricTest() {
     val messageStoreManager: MessageStoreManager by inject()
     val saveMessageDataCreator: SaveMessageDataCreator by inject()
 
-    val account: LegacyAccount = createAccount()
+    val account: Account = createAccount()
     val backendFolder = createBackendFolder()
     val database: LockableDatabase = localStoreProvider.getInstance(account).database
 
@@ -94,7 +94,7 @@ class K9BackendFolderTest : K9RobolectricTest() {
             .hasMessage("Message requires a server ID to be set")
     }
 
-    fun createAccount(): LegacyAccount {
+    fun createAccount(): Account {
         // FIXME: This is a hack to get Preferences into a state where it's safe to call newAccount()
         preferences.clearAccounts()
 

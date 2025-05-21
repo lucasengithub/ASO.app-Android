@@ -1,13 +1,15 @@
 plugins {
     id(ThunderbirdPlugins.Library.jvm)
+    alias(libs.plugins.ksp)
     alias(libs.plugins.android.lint)
-    alias(libs.plugins.kotlin.serialization)
 }
 
 dependencies {
     api(projects.backend.api)
 
-    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.moshi)
+    ksp(libs.moshi.kotlin.codegen)
 
     testImplementation(projects.mail.testing)
 }

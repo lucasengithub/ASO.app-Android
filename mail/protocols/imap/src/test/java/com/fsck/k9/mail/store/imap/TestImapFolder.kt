@@ -128,10 +128,6 @@ internal open class TestImapFolder(
         throw UnsupportedOperationException("not implemented")
     }
 
-    override fun create(): Boolean {
-        throw UnsupportedOperationException("not implemented")
-    }
-
     fun throwOnOpen(block: () -> Nothing) {
         openAction = block
     }

@@ -145,8 +145,7 @@ public abstract class TokenCompleteTextView<T> extends AppCompatAutoCompleteText
                 }
 
                 //Detect split characters, remove them and complete the current token instead
-                // We only want to handle the case where the user inputs a single split character here
-                if (source.length() == 1 && tokenizer.containsTokenTerminator(source)) {
+                if (tokenizer.containsTokenTerminator(source)) {
                     performCompletion();
                     return "";
                 }
@@ -393,10 +392,16 @@ public abstract class TokenCompleteTextView<T> extends AppCompatAutoCompleteText
                 candidateStringEnd = spanStart;
             }
         }
-        if (candidateStringEnd < candidateStringStart) {
-            return new Range(cursorEndPosition, cursorEndPosition);
+
+        List<Range> tokenRanges = tokenizer.findTokenRanges(editable, candidateStringStart, candidateStringEnd);
+
+        for (Range range: tokenRanges) {
+            if (range.start <= cursorEndPosition && cursorEndPosition <= range.end) {
+                return range;
+            }
         }
-        return new Range(candidateStringStart, candidateStringEnd);
+
+        return new Range(cursorEndPosition, cursorEndPosition);
     }
 
     /**
@@ -412,7 +417,7 @@ public abstract class TokenCompleteTextView<T> extends AppCompatAutoCompleteText
         Editable editable = getText();
         Range currentRange = getCurrentCandidateTokenRange();
 
-        String result = TextUtils.substring(editable, currentRange.start, currentRange.end).trim();
+        String result = TextUtils.substring(editable, currentRange.start, currentRange.end);
         Log.d(TAG, "Current completion text: " + result);
         return result;
     }

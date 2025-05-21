@@ -11,7 +11,6 @@ internal interface ImapConnection {
     val isConnected: Boolean
     val outputStream: OutputStream
     val isUidPlusCapable: Boolean
-    val isUtf8AcceptCapable: Boolean
     val isIdleCapable: Boolean
 
     @Throws(IOException::class, MessagingException::class)

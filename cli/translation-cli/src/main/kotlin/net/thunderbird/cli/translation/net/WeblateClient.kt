@@ -1,35 +1,25 @@
 package net.thunderbird.cli.translation.net
 
-import io.ktor.client.HttpClient
-import io.ktor.client.call.body
-import io.ktor.client.engine.cio.CIO
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.logging.DEFAULT
-import io.ktor.client.plugins.logging.LogLevel
-import io.ktor.client.plugins.logging.Logger
-import io.ktor.client.plugins.logging.Logging
-import io.ktor.client.request.get
-import io.ktor.http.headers
-import io.ktor.serialization.kotlinx.json.json
-import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.json.Json
+import org.http4k.client.OkHttp
+import org.http4k.core.Body
+import org.http4k.core.HttpHandler
+import org.http4k.core.Method
+import org.http4k.core.Request
+import org.http4k.core.Uri
+import org.http4k.format.Moshi.auto
 
 class WeblateClient(
-    private val client: HttpClient = createClient(),
+    private val client: HttpHandler = OkHttp(),
     private val config: WeblateConfig = WeblateConfig(),
 ) {
     fun loadLanguages(token: String): List<Language> {
-        val languages: List<Language>
+        val request = Request(Method.GET, Uri.of(config.projectsLanguagesUrl()))
+            .headers(config.getDefaultHeaders(token))
 
-        runBlocking {
-            languages = client.get(config.projectsLanguagesUrl()) {
-                headers {
-                    config.getDefaultHeaders(token).forEach { (key, value) -> append(key, value) }
-                }
-            }.body()
-        }
+        val response = client(request)
+        val lens = Body.auto<Array<Language>>().toLens()
 
-        return languages
+        return lens(response).toList()
     }
 
     fun loadTranslations(token: String): List<Translation> {
@@ -49,36 +39,16 @@ class WeblateClient(
     }
 
     private fun loadTranslationPage(token: String, page: Int): TranslationResponse {
-        val translationResponse: TranslationResponse
+        val request = Request(Method.GET, Uri.of(config.componentsTranslationsUrl(page)))
+            .headers(config.getDefaultHeaders(token))
 
-        runBlocking {
-            translationResponse = client.get(config.componentsTranslationsUrl(page)) {
-                headers {
-                    config.getDefaultHeaders(token).forEach { (key, value) -> append(key, value) }
-                }
-            }.body()
-        }
+        val response = client(request)
+        val lens = Body.auto<TranslationResponse>().toLens()
 
-        return translationResponse
+        return lens(response)
     }
 
     private companion object {
-        fun createClient(): HttpClient {
-            return HttpClient(CIO) {
-                install(Logging) {
-                    logger = Logger.DEFAULT
-                    level = LogLevel.NONE
-                }
-                install(ContentNegotiation) {
-                    json(
-                        Json {
-                            ignoreUnknownKeys = true
-                        },
-                    )
-                }
-            }
-        }
-
         private fun WeblateConfig.projectsLanguagesUrl() =
             "${baseUrl}projects/$projectName/languages/"
 

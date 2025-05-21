@@ -1,13 +1,7 @@
 pluginManagement {
-    includeBuild("build-plugin")
     repositories {
-        google {
-            content {
-                includeGroupByRegex("com\\.android.*")
-                includeGroupByRegex("com\\.google.*")
-                includeGroupByRegex("androidx.*")
-            }
-        }
+        includeBuild("build-plugin")
+        google()
         mavenCentral()
         gradlePluginPortal()
     }
@@ -16,26 +10,10 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
     repositories {
-        google {
-            content {
-                includeGroupByRegex("com\\.android.*")
-                includeGroupByRegex("com\\.google.*")
-                includeGroupByRegex("androidx.*")
-            }
-        }
-        maven(url = "https://maven.mozilla.org/maven2") {
-            content {
-                includeGroup("org.mozilla.components")
-                includeGroup("org.mozilla.telemetry")
-            }
-        }
-        maven(url = "https://jitpack.io") {
-            content {
-                includeGroup("com.github.ByteHamster")
-                includeGroup("com.github.cketti")
-            }
-        }
+        google()
         mavenCentral()
+        maven(url = "https://maven.mozilla.org/maven2")
+        maven(url = "https://jitpack.io")
     }
 }
 
@@ -72,18 +50,14 @@ include(
 )
 
 include(
-    ":feature:account:api",
     ":feature:account:avatar",
-    ":feature:account:core",
     ":feature:account:common",
     ":feature:account:edit",
     ":feature:account:oauth",
-    ":feature:account:settings:api",
-    ":feature:account:settings:impl",
+    ":feature:account:setup",
     ":feature:account:server:certificate",
     ":feature:account:server:settings",
     ":feature:account:server:validation",
-    ":feature:account:setup",
 )
 
 include(
@@ -94,14 +68,11 @@ include(
 )
 
 include(
-    ":feature:navigation:drawer:api",
-    ":feature:navigation:drawer:dropdown",
-    ":feature:navigation:drawer:siderail",
+    ":feature:navigation:drawer",
 )
 
 include(
     ":feature:widget:message-list",
-    ":feature:widget:message-list-glance",
     ":feature:widget:shortcut",
     ":feature:widget:unread",
 )
@@ -122,7 +93,6 @@ include(
 
 include(
     ":feature:funding:api",
-    ":feature:folder:api",
     ":feature:funding:googleplay",
     ":feature:funding:link",
     ":feature:funding:noop",
@@ -131,16 +101,13 @@ include(
 include(
     ":core:common",
     ":core:featureflags",
-    ":core:outcome",
     ":core:testing",
     ":core:android:common",
-    ":core:android:network",
     ":core:android:permissions",
     ":core:android:testing",
     ":core:ui:compose:common",
     ":core:ui:compose:designsystem",
     ":core:ui:compose:navigation",
-    ":core:ui:compose:preference",
     ":core:ui:compose:theme2:common",
     ":core:ui:compose:theme2:k9mail",
     ":core:ui:compose:theme2:thunderbird",
@@ -157,16 +124,24 @@ include(
 )
 
 include(
+    ":legacy:account",
     ":legacy:common",
     ":legacy:core",
     ":legacy:crypto-openpgp",
     ":legacy:di",
+    ":legacy:folder",
     ":legacy:mailstore",
     ":legacy:message",
+    ":legacy:notification",
+    ":legacy:preferences",
+    ":legacy:search",
     ":legacy:storage",
+    ":legacy:testing",
     ":legacy:ui:base",
+    ":legacy:ui:account",
     ":legacy:ui:folder",
     ":legacy:ui:legacy",
+    ":legacy:ui:theme",
 )
 
 include(
@@ -205,25 +180,3 @@ include(
     ":library:html-cleaner",
     ":library:TokenAutoComplete",
 )
-
-check(JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_17)) {
-    """
-        Java 17+ is required to build Thunderbird for Android.
-        But it found an incompatible Java version ${{JavaVersion.current()}}.
-
-        Java Home: [${System.getProperty("java.home")}]
-
-        Please install Java 17+ and set JAVA_HOME to the directory containing the Java 17+ installation.
-        https://developer.android.com/build/jdks#jdk-config-in-studio
-    """.trimIndent()
-}
-include(":core:android:logging")
-include(":core:preferences")
-include(":core:mail:mailserver")
-include(":feature:search")
-include(":core:account")
-include(":feature:notification")
-include(":core:ui:theme:manager")
-include(":core:contact")
-include(":core:ui:account")
-include(":core:android:account")

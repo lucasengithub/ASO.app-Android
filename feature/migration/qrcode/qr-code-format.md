@@ -475,4 +475,3 @@ The name to use in outgoing messages.
 - Identity:
   - Email: `jane@domain.example`
   - Display name: `Jane`
-

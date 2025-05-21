@@ -1,6 +1,8 @@
 package app.k9mail.feature.funding.googleplay.ui.contribution
 
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.performClick
+import app.k9mail.core.ui.compose.common.activity.LocalActivity
 import app.k9mail.core.ui.compose.testing.ComposeTest
 import app.k9mail.core.ui.compose.testing.onNodeWithTag
 import app.k9mail.core.ui.compose.testing.pressBack
@@ -10,6 +12,7 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import kotlin.test.Test
 import kotlinx.coroutines.test.runTest
+import org.mockito.Mockito.mock
 
 internal class ContributionScreenKtTest : ComposeTest() {
 
@@ -20,10 +23,12 @@ internal class ContributionScreenKtTest : ComposeTest() {
         var onBackCounter = 0
 
         setContentWithTheme {
-            ContributionScreen(
-                onBack = { onBackCounter++ },
-                viewModel = viewModel,
-            )
+            CompositionLocalProvider(LocalActivity provides mock()) {
+                ContributionScreen(
+                    onBack = { onBackCounter++ },
+                    viewModel = viewModel,
+                )
+            }
         }
 
         assertThat(onBackCounter).isEqualTo(0)

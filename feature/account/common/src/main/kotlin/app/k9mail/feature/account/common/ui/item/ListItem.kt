@@ -1,5 +1,6 @@
 package app.k9mail.feature.account.common.ui.item
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LazyItemScope.ListItem(
     modifier: Modifier = Modifier,
@@ -17,7 +19,7 @@ fun LazyItemScope.ListItem(
     Box(
         modifier = Modifier
             .padding(contentPaddingValues)
-            .animateItem()
+            .animateItemPlacement()
             .fillMaxWidth()
             .then(modifier),
     ) {

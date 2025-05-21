@@ -1,6 +1,6 @@
 package com.fsck.k9.ui.identity
 
-import net.thunderbird.core.android.account.Identity
+import app.k9mail.legacy.account.Identity
 
 class IdentityFormatter {
     fun getDisplayName(identity: Identity): String {
